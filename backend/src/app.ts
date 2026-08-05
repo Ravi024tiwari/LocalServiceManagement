@@ -12,6 +12,8 @@ import likedServiceRouter from "./routes/likedService.route.js"
 import providerCustomerRouter from "./routes/providerCustomer.route.js"
 import adminDashboardRouter from "./routes/adminDashboard.route.js"
 import adminProviderRouter from "./routes/adminProvider.route.js"
+import adminBookingRouter from "./routes/adminBooking.route.js"
+import adminPaymentRouter from "./routes/adminPayment.route.js"
 
 const app = express()
 
@@ -45,5 +47,7 @@ app.use("/api/liked-services", likedServiceRouter)
 app.use("/api/provider-customers", providerCustomerRouter)
 app.use("/api/admin/dashboard", adminDashboardRouter)
 app.use("/api/admin/providers", adminProviderRouter)
+app.use("/api/admin/bookings", adminBookingRouter)
+app.use("/api/admin/payments", adminPaymentRouter)
 
 export default app;

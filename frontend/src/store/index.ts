@@ -6,6 +6,8 @@ import likedServiceReducer from './slices/likedServiceSlice';
 import providerCustomerReducer from './slices/providerCustomerSlice';
 import adminDashboardReducer from './slices/adminDashboardSlice';
 import adminProviderReducer from './slices/adminProviderSlice';
+import adminBookingReducer from './slices/adminBookingSlice';
+import adminPaymentReducer from './slices/adminPaymentSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +18,8 @@ export const store = configureStore({
     providerCustomer: providerCustomerReducer,
     adminDashboard: adminDashboardReducer,
     adminProvider: adminProviderReducer,
+    adminBooking: adminBookingReducer,
+    adminPayment: adminPaymentReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

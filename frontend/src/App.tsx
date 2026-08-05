@@ -15,6 +15,8 @@ import ProviderBookings from "./pages/provider/ProviderBookings";
 import ProviderCustomers from "./pages/provider/ProviderCustomers";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProviders from "./pages/admin/AdminProviders";
+import AdminBookings from "./pages/admin/AdminBookings";
+import AdminPayments from "./pages/admin/AdminPayments";
 
 const ProtectedRoute = () => {
   const isAuthenticated = localStorage.getItem("token") !== null;
@@ -73,6 +75,8 @@ export default function App() {
             <Route path="/provider/customers" element={<ProviderCustomers />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/providers" element={<AdminProviders />} />
+            <Route path="/admin/bookings" element={<AdminBookings />} />
+            <Route path="/admin/payments" element={<AdminPayments />} />
             <Route path="/profile" element={<CustomerProfile />} />
             <Route path="/settings" element={<CustomerProfile />} />
           </Route>
