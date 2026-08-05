@@ -6,7 +6,30 @@ export const applyForProvider = async (userId: string, profileData: Partial<IPro
     // 1. Check if the user already has a provider profile
     const existingProfile = await ProviderProfile.findOne({ user_id: userId });
     if (existingProfile) {
-        throw new Error('You have already applied to be a provider.');
+        // If profile exists (e.g. auto-created during PROVIDER registration), update documents & bio
+        const updatedProfile = await ProviderProfile.findOneAndUpdate(
+            { user_id: userId },
+            { $set: profileData },
+            { new: true, runValidators: true }
+        );
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { role: 'PROVIDER' },
+            { new: true }
+        ).select('-password');
+
+        const newToken = jwt.sign(
+            { id: userId, role: 'PROVIDER' },
+            process.env.JWT_SECRET as string,
+            { expiresIn: '7d' }
+        );
+
+        return {
+            profile: updatedProfile,
+            token: newToken,
+            user: updatedUser
+        };
     }
 
     // 2. Create the Provider Profile (isApproved defaults to false)

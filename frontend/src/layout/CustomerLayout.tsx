@@ -3,7 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { 
   LayoutDashboard, Calendar, MapPin, Wallet, Star, 
   Bookmark, Bell, LifeBuoy, Settings, ShieldCheck,
-  Menu, Home, User, Compass
+  Menu, Home, User, Compass,
+  Heart
 } from "lucide-react";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -22,7 +23,7 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
     { name: "My Addresses", icon: <MapPin size={20} />, path: "/addresses" },
     { name: "Wallet", icon: <Wallet size={20} />, path: "/wallet" },
     { name: "Reviews", icon: <Star size={20} />, path: "/reviews" },
-    { name: "Saved Services", icon: <Bookmark size={20} />, path: "/saved" },
+    { name: "Liked Services", icon: <Heart size={20} />, path: "/liked-services" },
     { name: "Notifications", icon: <Bell size={20} />, path: "/notifications", badge: 3 },
     { name: "Support", icon: <LifeBuoy size={20} />, path: "/support" },
     { name: "Settings", icon: <Settings size={20} />, path: "/profile" },
@@ -37,7 +38,8 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
       case "/addresses": return "Saved Addresses";
       case "/wallet": return "My Wallet";
       case "/reviews": return "Reviews & Ratings";
-      case "/saved": return "Saved Services";
+      case "/liked-services":
+      case "/saved": return "Liked Services";
       case "/notifications": return "Notifications";
       case "/support": return "Support & Help";
       default: return "ServiceHub";
@@ -178,9 +180,10 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
       </main>
 
       {/* MOBILE BOTTOM NAV */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around items-center p-3 z-30 pb-safe">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around items-center p-2.5 z-30 pb-safe">
         <NavItem onClick={() => navigate("/")} icon={<Home />} label="Home" active={location.pathname === "/"} />
         <NavItem onClick={() => navigate("/bookings")} icon={<Calendar />} label="Bookings" active={location.pathname === "/bookings"} />
+        <NavItem onClick={() => navigate("/liked-services")} icon={<Heart />} label="Liked" active={location.pathname === "/liked-services" || location.pathname === "/saved"} />
         <NavItem onClick={() => navigate("/wallet")} icon={<Wallet />} label="Wallet" active={location.pathname === "/wallet"} />
         <NavItem onClick={() => navigate("/profile")} icon={<User />} label="Profile" active={location.pathname === "/profile"} />
       </div>
@@ -195,4 +198,4 @@ function NavItem({ icon, label, active = false, onClick }: { icon: ReactNode; la
       <span className={`text-[10px] font-semibold ${active ? "text-emerald-700" : "text-gray-500"}`}>{label}</span>
     </div>
   );
-}
+}

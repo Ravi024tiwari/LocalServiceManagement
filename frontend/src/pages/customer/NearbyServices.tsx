@@ -7,8 +7,11 @@ import {
 } from "lucide-react";
 
 import CustomerLayout from "@/layout/CustomerLayout";
+import LikeButton from "@/components/customer/LikeButton";
 import { serviceApi } from "@/services/service.service";
 import { bookingApi } from "@/services/booking.service";
+import { useAppDispatch } from "@/store/hooks";
+import { fetchLikedServices } from "@/store/slices/likedServiceSlice";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -74,6 +77,7 @@ function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lon2: num
 
 export default function NearbyServices() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   // Customer Location State
   const [userLat, setUserLat] = useState<number>(23.2599);
@@ -140,7 +144,8 @@ export default function NearbyServices() {
 
   useEffect(() => {
     detectLiveLocation();
-  }, []);
+    dispatch(fetchLikedServices());
+  }, [dispatch]);
 
   // Fetch Nearby Services from Backend API
   useEffect(() => {
@@ -514,13 +519,9 @@ export default function NearbyServices() {
                       <span>{distanceKm} km away</span>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={(e) => toggleBookmark(service._id, e)}
-                      className="absolute top-2.5 right-2.5 bg-white/90 hover:bg-white p-2 rounded-full shadow-sm transition-transform active:scale-95 text-gray-600 hover:text-red-500"
-                    >
-                      <Heart className={`w-4 h-4 ${isBookmarked ? "fill-red-500 text-red-500" : ""}`} />
-                    </button>
+                    <div className="absolute top-2.5 right-2.5 z-10" onClick={(e) => e.stopPropagation()}>
+                      <LikeButton serviceId={service._id} />
+                    </div>
 
                     <div className="absolute bottom-2.5 right-2.5 bg-emerald-600 text-white px-2.5 py-0.5 rounded-md text-[10px] font-bold shadow-sm">
                       {service.category}

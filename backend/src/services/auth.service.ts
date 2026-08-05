@@ -1,4 +1,5 @@
 import { User, IUser } from '../models/User.model.js';
+import { ProviderProfile } from '../models/ProviderProfile.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -27,6 +28,32 @@ export const registerUser = async (userData: Partial<IUser>): Promise<AuthRespon
         phone,
         ...(role && { role }),
     });
+
+    // If registered as a PROVIDER, automatically create their ProviderProfile document
+    if (user.role === 'PROVIDER') {
+        const existingProfile = await ProviderProfile.findOne({ user_id: user._id });
+        if (!existingProfile) {
+            await ProviderProfile.create({
+                user_id: user._id,
+                documents: [],
+                verification_status: 'PENDING',
+                isApproved: false,
+                is_active: true,
+                experience_years: 0,
+                average_rating: 0,
+                total_reviews: 0,
+                availability: [
+                    { day: 'Monday', start_time: '09:00', end_time: '18:00', is_closed: false },
+                    { day: 'Tuesday', start_time: '09:00', end_time: '18:00', is_closed: false },
+                    { day: 'Wednesday', start_time: '09:00', end_time: '18:00', is_closed: false },
+                    { day: 'Thursday', start_time: '09:00', end_time: '18:00', is_closed: false },
+                    { day: 'Friday', start_time: '09:00', end_time: '18:00', is_closed: false },
+                    { day: 'Saturday', start_time: '09:00', end_time: '18:00', is_closed: false },
+                    { day: 'Sunday', start_time: '09:00', end_time: '18:00', is_closed: true },
+                ],
+            });
+        }
+    }
 
     const token = jwt.sign(
         { id: user._id, role: user.role },

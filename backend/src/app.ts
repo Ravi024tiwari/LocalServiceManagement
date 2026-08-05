@@ -8,6 +8,10 @@ import ProviderProfileRouter from "./routes/providerProfile.route.js"
 import bookingRouter from "./routes/booking.route.js"
 import paymentRouter from "./routes/payment.route.js"
 import userRouter from "./routes/user.route.js"
+import likedServiceRouter from "./routes/likedService.route.js"
+import providerCustomerRouter from "./routes/providerCustomer.route.js"
+import adminDashboardRouter from "./routes/adminDashboard.route.js"
+import adminProviderRouter from "./routes/adminProvider.route.js"
 
 const app = express()
 
@@ -37,5 +41,9 @@ app.use("/api/service", serviceRouter)
 app.use("/api/provider-profile", ProviderProfileRouter)
 app.use("/api/booking", bookingRouter)
 app.use("/api/payment", paymentRouter)
+app.use("/api/liked-services", likedServiceRouter)
+app.use("/api/provider-customers", providerCustomerRouter)
+app.use("/api/admin/dashboard", adminDashboardRouter)
+app.use("/api/admin/providers", adminProviderRouter)
 
 export default app;
