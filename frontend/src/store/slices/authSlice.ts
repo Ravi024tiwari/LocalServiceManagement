@@ -86,6 +86,21 @@ const authSlice = createSlice({
       }
     },
 
+    updateUserProfile: (
+      state,
+      action: PayloadAction<Partial<UserState>>
+    ) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+      } else {
+        state.user = action.payload as UserState;
+      }
+      if (action.payload.role) {
+        state.role = action.payload.role;
+      }
+      localStorage.setItem("user", JSON.stringify(state.user));
+    },
+
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -98,5 +113,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, updateUserRole, logout } = authSlice.actions;
+export const { setCredentials, updateUserRole, updateUserProfile, logout } = authSlice.actions;
 export default authSlice.reducer;

@@ -16,17 +16,35 @@ export const customerService = {
     }
   },
 
-  updateProfile: async (profileData: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    location?: string;
-    avatar?: string;
-    bio?: string;
-  }) => {
+  updateProfile: async (
+    profileData: {
+      name?: string;
+      email?: string;
+      phone?: string;
+      location?: string;
+      avatar?: string;
+      bio?: string;
+    },
+    avatarFile?: File
+  ) => {
     try {
+      if (avatarFile) {
+        const formData = new FormData();
+        if (profileData.name) formData.append("name", profileData.name);
+        if (profileData.phone) formData.append("phone", profileData.phone);
+        if (profileData.location) formData.append("location", profileData.location);
+        if (profileData.bio) formData.append("bio", profileData.bio);
+        if (profileData.avatar) formData.append("avatar", profileData.avatar);
+        formData.append("avatar", avatarFile);
+
+        const response = await api.patch("/user/profile", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        return response.data?.data || response.data;
+      }
+
       const response = await api.patch("/user/profile", profileData);
-      return response.data;
+      return response.data?.data || response.data;
     } catch (err: any) {
       console.error("Profile update backend API error:", err);
       throw err;

@@ -1,20 +1,51 @@
-import { type ReactNode, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { type ReactNode, useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
 import {
   LayoutDashboard, Briefcase, PlusCircle, Calendar, Users, Star,
   IndianRupee, LineChart, Bell, User, Settings, ShieldCheck,
   Menu, Power, MoreHorizontal
 } from "lucide-react";
 
-import { useNavigate } from "react-router";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
+import ProviderAvatarMenu from "@/components/provider/ProviderAvatarMenu";
 
 export default function ProviderLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isOnline, setIsOnline] = useState(true);
+
+  const [providerUser, setProviderUser] = useState<{ name?: string; avatar?: string }>({
+    name: "Provider",
+    avatar: "https://i.pravatar.cc/150?img=11",
+  });
+
+  const loadProviderUser = () => {
+    const stored = localStorage.getItem("user");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setProviderUser({
+          name: parsed.name || parsed.fullName || "Provider",
+          avatar: parsed.avatar && typeof parsed.avatar === "string" && parsed.avatar.trim() !== "" && !parsed.avatar.startsWith("blob:")
+            ? parsed.avatar
+            : "https://i.pravatar.cc/150?img=11",
+        });
+      } catch (e) {
+        console.error("Failed to parse user in ProviderLayout", e);
+      }
+    }
+  };
+
+  useEffect(() => {
+    loadProviderUser();
+    window.addEventListener("userProfileUpdated", loadProviderUser);
+    window.addEventListener("storage", loadProviderUser);
+    return () => {
+      window.removeEventListener("userProfileUpdated", loadProviderUser);
+      window.removeEventListener("storage", loadProviderUser);
+    };
+  }, []);
 
   const navItems = [
     { name: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/provider" },
@@ -22,10 +53,8 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
     { name: "Create Service", icon: <PlusCircle size={20} />, path: "/provider/create-service" },
     { name: "Bookings", icon: <Calendar size={20} />, path: "/provider/bookings", badge: 18 },
     { name: "Customers", icon: <Users size={20} />, path: "/provider/customers" },
-    { name: "Reviews", icon: <Star size={20} />, path: "/provider/reviews", badge: 32 },
+    { name: "Reviews", icon: <Star size={20} />, path: "/provider/reviews" },
     { name: "Earnings", icon: <IndianRupee size={20} />, path: "/provider/earnings" },
-    { name: "Analytics", icon: <LineChart size={20} />, path: "/provider/analytics" },
-    { name: "Notifications", icon: <Bell size={20} />, path: "/provider/notifications", badge: 6 },
     { name: "Profile", icon: <User size={20} />, path: "/provider/profile" },
     { name: "Settings", icon: <Settings size={20} />, path: "/provider/settings" },
   ];
@@ -155,10 +184,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
               <Bell className="h-6 w-6 text-gray-600" />
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border-2 border-white">6</span>
             </div>
-            <Avatar className="w-8 h-8 border border-gray-200 shadow-sm">
-              <AvatarImage src="https://i.pravatar.cc/150?img=11" />
-              <AvatarFallback>RH</AvatarFallback>
-            </Avatar>
+            <ProviderAvatarMenu />
           </div>
         </header>
 
@@ -176,7 +202,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
         <NavItem onClick={() => navigate("/provider/bookings")} icon={<Calendar />} label="Bookings" active={location.pathname === "/provider/bookings"} />
         <NavItem onClick={() => navigate("/provider/services")} icon={<Briefcase />} label="Services" active={location.pathname === "/provider/services"} />
         <NavItem onClick={() => navigate("/provider/earnings")} icon={<IndianRupee />} label="Earnings" active={location.pathname === "/provider/earnings"} />
-        <NavItem onClick={() => navigate("/provider/settings")} icon={<MoreHorizontal />} label="More" active={location.pathname === "/provider/settings"} />
+        <NavItem onClick={() => navigate("/provider/profile")} icon={<User />} label="Profile" active={location.pathname === "/provider/profile"} />
       </div>
     </div>
   );

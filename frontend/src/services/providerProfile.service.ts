@@ -76,4 +76,14 @@ export const providerProfileApi = {
       return null;
     }
   },
+
+  // Update current user's provider profile details (bio, experience_years, availability)
+  updateMyProfile: async (data: {
+    bio?: string;
+    experience_years?: number;
+    availability?: TimeSlot[];
+  }) => {
+    const response = await api.patch("/provider-profile/me", data);
+    return response.data?.data || response.data;
+  },
 };

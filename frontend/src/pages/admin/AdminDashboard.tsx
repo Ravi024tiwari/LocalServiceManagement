@@ -70,65 +70,77 @@ export default function AdminDashboard() {
   };
 
   const metrics = data?.metrics || {
-    totalUsers: 12458,
-    totalUsersGrowth: "+18.6%",
-    totalProviders: 1245,
-    totalProvidersGrowth: "+14.3%",
-    totalServices: 3248,
-    totalServicesGrowth: "+21.7%",
-    totalBookings: 8569,
-    totalBookingsGrowth: "+23.4%",
-    totalRevenue: 2478560,
-    totalRevenueGrowth: "+27.8%",
+    totalUsers: 0,
+    totalUsersGrowth: "0%",
+    totalProviders: 0,
+    totalProvidersGrowth: "0%",
+    totalServices: 0,
+    totalServicesGrowth: "0%",
+    totalBookings: 0,
+    totalBookingsGrowth: "0%",
+    totalRevenue: 0,
+    totalRevenueGrowth: "0%",
   };
 
   const verificationStats = data?.providerVerification?.stats || {
-    pending: 32,
-    verified: 1025,
-    rejected: 18,
-    suspended: 12,
+    pending: 0,
+    verified: 0,
+    rejected: 0,
+    suspended: 0,
   };
 
-  const pendingProviders = data?.providerVerification?.pendingProviders || [
-    {
-      providerProfileId: "p1",
-      name: "Rakesh Sharma",
-      category: "Plumbing Services",
-      appliedDate: "Applied on 18 Jun, 2025",
-      avatar: "https://i.pravatar.cc/150?img=33",
-    },
-    {
-      providerProfileId: "p2",
-      name: "Sneha Patel",
-      category: "Home Cleaning",
-      appliedDate: "Applied on 18 Jun, 2025",
-      avatar: "https://i.pravatar.cc/150?img=47",
-    },
-    {
-      providerProfileId: "p3",
-      name: "Amit Verma",
-      category: "Electrical Work",
-      appliedDate: "Applied on 17 Jun, 2025",
-      avatar: "https://i.pravatar.cc/150?img=12",
-    },
-  ];
+  const pendingProviders = data?.providerVerification?.pendingProviders || [];
 
-  const topServices = data?.topServices || [
-    { id: "s1", name: "Home Cleaning", rating: 4.8, reviewsCount: 1245 },
-    { id: "s2", name: "AC Repair & Service", rating: 4.7, reviewsCount: 987 },
-    { id: "s3", name: "Plumbing Services", rating: 4.6, reviewsCount: 856 },
-    { id: "s4", name: "Electrical Work", rating: 4.6, reviewsCount: 742 },
-    { id: "s5", name: "Painting Services", rating: 4.5, reviewsCount: 654 },
-  ];
+  const topServices = data?.topServices || [];
 
-  const categoryBreakdown = data?.charts?.servicesByCategory || [
-    { name: "Home Cleaning", percentage: 28, count: 912, color: "#10b981" },
-    { name: "Plumbing", percentage: 22, count: 715, color: "#3b82f6" },
-    { name: "Electrical", percentage: 18, count: 584, color: "#f59e0b" },
-    { name: "Appliance Repair", percentage: 15, count: 487, color: "#8b5cf6" },
-    { name: "Carpentry", percentage: 10, count: 325, color: "#ec4899" },
-    { name: "Others", percentage: 7, count: 225, color: "#6b7280" },
-  ];
+  const platformSummary = data?.platformSummary || {
+    activeServices: metrics.totalServices,
+    activeProviders: metrics.totalProviders,
+    completedBookings: metrics.totalBookings,
+    totalCustomers: metrics.totalUsers,
+    averageRating: 5.0,
+  };
+
+  // 1. Bookings Overview Chart Data Calculation
+  const bookingsChartData = data?.charts?.bookingsOverview || [];
+  const maxBookings = Math.max(...bookingsChartData.map((b) => b.bookings), 1);
+  const bookingsPoints = bookingsChartData.map((item, index) => {
+    const x = bookingsChartData.length > 1 ? (index / (bookingsChartData.length - 1)) * 380 + 10 : 200;
+    const y = 100 - (item.bookings / maxBookings) * 80;
+    return { x, y, ...item };
+  });
+  const bookingsLinePath = bookingsPoints.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x},${p.y}`).join(" ");
+  const bookingsAreaPath = bookingsPoints.length > 0
+    ? `${bookingsLinePath} L ${bookingsPoints[bookingsPoints.length - 1].x},110 L ${bookingsPoints[0].x},110 Z`
+    : "";
+
+  // 2. Services By Category Donut Chart Calculation
+  const categoryBreakdown = data?.charts?.servicesByCategory || [];
+
+  let accumulatedDash = 0;
+  const donutSlices = categoryBreakdown.map((cat) => {
+    const dashArray = `${cat.percentage} ${100 - cat.percentage}`;
+    const dashOffset = -accumulatedDash;
+    accumulatedDash += cat.percentage;
+    return { ...cat, dashArray, dashOffset };
+  });
+
+  // 3. Revenue Overview Bar Chart Calculation
+  const revenueChartData = data?.charts?.revenueOverview || [];
+  const maxRevenue = Math.max(...revenueChartData.map((r) => r.revenue), 1);
+
+  // 4. User Growth Trend Calculation
+  const userGrowthChartData = data?.charts?.userGrowth || [];
+  const maxUsers = Math.max(...userGrowthChartData.map((u) => u.users), 1);
+  const userPoints = userGrowthChartData.map((item, index) => {
+    const x = userGrowthChartData.length > 1 ? (index / (userGrowthChartData.length - 1)) * 380 + 10 : 200;
+    const y = 100 - (item.users / maxUsers) * 80;
+    return { x, y, ...item };
+  });
+  const userLinePath = userPoints.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x},${p.y}`).join(" ");
+  const userAreaPath = userPoints.length > 0
+    ? `${userLinePath} L ${userPoints[userPoints.length - 1].x},110 L ${userPoints[0].x},110 Z`
+    : "";
 
   return (
     <AdminLayout>
@@ -234,11 +246,11 @@ export default function AdminDashboard() {
               <div>
                 <h3 className="font-extrabold text-gray-900 text-sm">Bookings Overview</h3>
                 <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-xl font-black text-gray-900">8,569</span>
+                  <span className="text-xl font-black text-gray-900">{metrics.totalBookings.toLocaleString()}</span>
                   <span className="text-xs font-semibold text-gray-400">Total Bookings</span>
                 </div>
                 <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-0.5 mt-0.5">
-                  <ArrowUpRight className="w-3 h-3" /> +23.4% <span className="text-gray-400 font-normal">vs last month</span>
+                  <ArrowUpRight className="w-3 h-3" /> {metrics.totalBookingsGrowth} <span className="text-gray-400 font-normal">vs last month</span>
                 </span>
               </div>
 
@@ -248,7 +260,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Area/Line Chart Mockup Visual */}
+            {/* Area/Line SVG Chart */}
             <div className="relative h-44 w-full pt-4">
               <svg className="w-full h-full overflow-visible" viewBox="0 0 400 120" preserveAspectRatio="none">
                 <defs>
@@ -257,36 +269,18 @@ export default function AdminDashboard() {
                     <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
-                {/* Gradient Fill */}
-                <path
-                  d="M0,90 Q50,95 100,85 T200,60 T300,40 T400,20 L400,120 L0,120 Z"
-                  fill="url(#emeraldGradient)"
-                />
-                {/* Line Path */}
-                <path
-                  d="M0,90 Q50,95 100,85 T200,60 T300,40 T400,20"
-                  fill="none"
-                  stroke="#10b981"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-                {/* Tooltip marker dot */}
-                <circle cx="280" cy="45" r="5" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
+                <path d={bookingsAreaPath} fill="url(#emeraldGradient)" />
+                <path d={bookingsLinePath} fill="none" stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
+                {bookingsPoints.map((pt, idx) => (
+                  <circle key={idx} cx={pt.x} cy={pt.y} r="4" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
+                ))}
               </svg>
-
-              {/* Tooltip Card Overlay */}
-              <div className="absolute top-2 right-16 bg-gray-900 text-white text-[10px] p-2 rounded-xl shadow-lg border border-gray-700 pointer-events-none">
-                <span className="font-bold block text-emerald-400">Jun 10, 2025</span>
-                <span>Bookings: 853</span>
-              </div>
 
               {/* X Axis Labels */}
               <div className="flex justify-between text-[10px] text-gray-400 font-semibold mt-2">
-                <span>May 20</span>
-                <span>May 27</span>
-                <span>Jun 3</span>
-                <span>Jun 10</span>
-                <span>Jun 17</span>
+                {bookingsChartData.map((item, i) => (
+                  <span key={i}>{item.date}</span>
+                ))}
               </div>
             </div>
           </div>
@@ -305,15 +299,23 @@ export default function AdminDashboard() {
               {/* SVG Donut Chart */}
               <div className="relative w-36 h-36 shrink-0 flex items-center justify-center">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                  {/* Circle Slices */}
                   <circle cx="18" cy="18" r="14" fill="none" stroke="#e5e7eb" strokeWidth="5" />
-                  <circle cx="18" cy="18" r="14" fill="none" stroke="#10b981" strokeWidth="5" strokeDasharray="28 100" strokeDashoffset="0" />
-                  <circle cx="18" cy="18" r="14" fill="none" stroke="#3b82f6" strokeWidth="5" strokeDasharray="22 100" strokeDashoffset="-28" />
-                  <circle cx="18" cy="18" r="14" fill="none" stroke="#f59e0b" strokeWidth="5" strokeDasharray="18 100" strokeDashoffset="-50" />
-                  <circle cx="18" cy="18" r="14" fill="none" stroke="#8b5cf6" strokeWidth="5" strokeDasharray="15 100" strokeDashoffset="-68" />
+                  {donutSlices.map((cat, idx) => (
+                    <circle
+                      key={idx}
+                      cx="18"
+                      cy="18"
+                      r="14"
+                      fill="none"
+                      stroke={cat.color}
+                      strokeWidth="5"
+                      strokeDasharray={cat.dashArray}
+                      strokeDashoffset={cat.dashOffset}
+                    />
+                  ))}
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                  <span className="text-lg font-black text-gray-900 leading-none">3,248</span>
+                  <span className="text-lg font-black text-gray-900 leading-none">{metrics.totalServices.toLocaleString()}</span>
                   <span className="text-[10px] text-gray-400 font-bold uppercase mt-0.5">Total</span>
                 </div>
               </div>
@@ -342,11 +344,11 @@ export default function AdminDashboard() {
               <div>
                 <h3 className="font-extrabold text-gray-900 text-sm">Revenue Overview</h3>
                 <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-xl font-black text-gray-900">₹24,78,560</span>
+                  <span className="text-xl font-black text-gray-900">₹{metrics.totalRevenue.toLocaleString()}</span>
                   <span className="text-xs font-semibold text-gray-400">Total Revenue</span>
                 </div>
                 <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-0.5 mt-0.5">
-                  <ArrowUpRight className="w-3 h-3" /> +27.8% <span className="text-gray-400 font-normal">vs last month</span>
+                  <ArrowUpRight className="w-3 h-3" /> {metrics.totalRevenueGrowth} <span className="text-gray-400 font-normal">vs last month</span>
                 </span>
               </div>
 
@@ -358,20 +360,20 @@ export default function AdminDashboard() {
 
             {/* Vertical Bar Chart */}
             <div className="flex items-end justify-between h-40 pt-4 px-2">
-              {[
-                { label: 'May 20', val: 50 },
-                { label: 'May 27', val: 70 },
-                { label: 'Jun 3', val: 65 },
-                { label: 'Jun 10', val: 95 },
-                { label: 'Jun 17', val: 80 },
-              ].map((bar, i) => (
-                <div key={i} className="flex flex-col items-center gap-2 group flex-1">
-                  <div className="w-6 bg-emerald-100 rounded-t-lg group-hover:bg-emerald-600 transition-colors relative overflow-hidden" style={{ height: `${bar.val}%` }}>
-                    <div className="w-full bg-emerald-500 rounded-t-lg absolute bottom-0 left-0 right-0 h-full" />
+              {revenueChartData.map((bar, i) => {
+                const heightPercent = Math.max(10, Math.round((bar.revenue / maxRevenue) * 100));
+                return (
+                  <div key={i} className="flex flex-col items-center gap-2 group flex-1 relative">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-7 bg-gray-900 text-white text-[9px] font-bold py-1 px-1.5 rounded shadow pointer-events-none z-10 whitespace-nowrap">
+                      ₹{bar.revenue.toLocaleString()}
+                    </div>
+                    <div className="w-6 bg-emerald-100 rounded-t-lg group-hover:bg-emerald-600 transition-colors relative overflow-hidden h-32 flex items-end">
+                      <div className="w-full bg-emerald-500 rounded-t-lg transition-all duration-300" style={{ height: `${heightPercent}%` }} />
+                    </div>
+                    <span className="text-[10px] font-semibold text-gray-400">{bar.date}</span>
                   </div>
-                  <span className="text-[10px] font-semibold text-gray-400">{bar.label}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -477,11 +479,11 @@ export default function AdminDashboard() {
               <div>
                 <h3 className="font-extrabold text-gray-900 text-sm">User Growth</h3>
                 <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-xl font-black text-gray-900">12,458</span>
+                  <span className="text-xl font-black text-gray-900">{metrics.totalUsers.toLocaleString()}</span>
                   <span className="text-xs font-semibold text-gray-400">Total Users</span>
                 </div>
                 <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-0.5 mt-0.5">
-                  <ArrowUpRight className="w-3 h-3" /> +18.6% <span className="text-gray-400 font-normal">vs last month</span>
+                  <ArrowUpRight className="w-3 h-3" /> {metrics.totalUsersGrowth} <span className="text-gray-400 font-normal">vs last month</span>
                 </span>
               </div>
 
@@ -494,20 +496,22 @@ export default function AdminDashboard() {
             {/* Growth Wave SVG */}
             <div className="relative h-44 w-full pt-4">
               <svg className="w-full h-full overflow-visible" viewBox="0 0 400 120" preserveAspectRatio="none">
-                <path
-                  d="M0,100 Q60,110 120,70 T240,50 T360,30 T400,10"
-                  fill="none"
-                  stroke="#10b981"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
+                <defs>
+                  <linearGradient id="userGrowthGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
+                    <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+                <path d={userAreaPath} fill="url(#userGrowthGradient)" />
+                <path d={userLinePath} fill="none" stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
+                {userPoints.map((pt, idx) => (
+                  <circle key={idx} cx={pt.x} cy={pt.y} r="4" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
+                ))}
               </svg>
               <div className="flex justify-between text-[10px] text-gray-400 font-semibold mt-2">
-                <span>May 20</span>
-                <span>May 27</span>
-                <span>Jun 3</span>
-                <span>Jun 10</span>
-                <span>Jun 17</span>
+                {userGrowthChartData.map((item, i) => (
+                  <span key={i}>{item.date}</span>
+                ))}
               </div>
             </div>
           </div>
@@ -517,24 +521,24 @@ export default function AdminDashboard() {
         <div className="bg-emerald-50/80 border border-emerald-100 p-5 rounded-3xl shadow-sm grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
           <div>
             <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">Active Services</span>
-            <span className="text-xl font-black text-gray-900 mt-0.5 block">2,856</span>
+            <span className="text-xl font-black text-gray-900 mt-0.5 block">{(platformSummary.activeServices || metrics.totalServices).toLocaleString()}</span>
           </div>
           <div>
             <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">Active Providers</span>
-            <span className="text-xl font-black text-gray-900 mt-0.5 block">1,025</span>
+            <span className="text-xl font-black text-gray-900 mt-0.5 block">{(platformSummary.activeProviders || metrics.totalProviders).toLocaleString()}</span>
           </div>
           <div>
             <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">Completed Bookings</span>
-            <span className="text-xl font-black text-gray-900 mt-0.5 block">7,854</span>
+            <span className="text-xl font-black text-gray-900 mt-0.5 block">{(platformSummary.completedBookings || metrics.totalBookings).toLocaleString()}</span>
           </div>
           <div>
             <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">Total Customers</span>
-            <span className="text-xl font-black text-gray-900 mt-0.5 block">12,458</span>
+            <span className="text-xl font-black text-gray-900 mt-0.5 block">{(platformSummary.totalCustomers || metrics.totalUsers).toLocaleString()}</span>
           </div>
           <div className="col-span-2 md:col-span-1">
             <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">Average Rating</span>
             <span className="text-xl font-black text-gray-900 mt-0.5 block flex items-center justify-center gap-1">
-              4.7 <span className="text-emerald-700 text-sm font-normal">/ 5</span>
+              {platformSummary.averageRating || 4.8} <span className="text-emerald-700 text-sm font-normal">/ 5</span>
             </span>
           </div>
         </div>

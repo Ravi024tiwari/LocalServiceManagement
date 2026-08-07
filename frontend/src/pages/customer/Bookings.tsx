@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { 
   Calendar, Clock, MapPin, CheckCircle2, AlertCircle, 
-  CreditCard, Loader2, RefreshCw, Key, ShieldCheck, XCircle
+  CreditCard, Loader2, RefreshCw, Key, ShieldCheck, XCircle, Star
 } from "lucide-react";
 
 import CustomerLayout from "@/layout/CustomerLayout";
 import { bookingApi } from "@/services/booking.service";
 import { paymentApi } from "@/services/payment.service";
+import { reviewApi } from "@/services/review.api";
+import { ReviewFormModal } from "@/components/reviews/ReviewFormModal";
 
 interface BookingItem {
   _id: string;
@@ -41,6 +43,28 @@ export default function CustomerBookings() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [payingBookingId, setPayingBookingId] = useState<string | null>(null);
   const [paymentMessage, setPaymentMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  // Review Modal State
+  const [reviewModalBooking, setReviewModalBooking] = useState<{ serviceId: string; serviceName: string; bookingId: string } | null>(null);
+  const [isSubmittingReview, setIsSubmittingReview] = useState<boolean>(false);
+
+  const handleReviewSubmit = async (rating: number, comment: string) => {
+    if (!reviewModalBooking) return;
+    setIsSubmittingReview(true);
+    try {
+      await reviewApi.submitServiceReview({
+        serviceId: reviewModalBooking.serviceId,
+        bookingId: reviewModalBooking.bookingId,
+        rating,
+        comment
+      });
+      alert("Thank you! Your rating & review has been submitted.");
+    } catch (err: any) {
+      alert(err.response?.data?.message || err.message || "Failed to submit review");
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   const fetchCustomerBookings = async () => {
     try {
@@ -290,6 +314,20 @@ export default function CustomerBookings() {
                       </div>
                     )}
 
+                    {/* Rate & Review Button for Completed Bookings */}
+                    {booking.status === "COMPLETED" && booking.service_id?._id && (
+                      <button
+                        onClick={() => setReviewModalBooking({
+                          serviceId: booking.service_id!._id!,
+                          serviceName: serviceName,
+                          bookingId: booking._id
+                        })}
+                        className="w-full py-2.5 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white text-xs font-extrabold rounded-xl shadow-md shadow-amber-200 flex items-center justify-center gap-2 cursor-pointer transition-all"
+                      >
+                        <Star className="w-4 h-4 fill-white" /> Rate & Review Service
+                      </button>
+                    )}
+
                     {/* Cancel Button (If Pending or Accepted) */}
                     {(booking.status === "PENDING" || booking.status === "ACCEPTED") && (
                       <button
@@ -305,6 +343,15 @@ export default function CustomerBookings() {
             })}
           </div>
         )}
+
+        {/* Review Form Modal */}
+        <ReviewFormModal
+          isOpen={!!reviewModalBooking}
+          onClose={() => setReviewModalBooking(null)}
+          onSubmit={handleReviewSubmit}
+          serviceName={reviewModalBooking?.serviceName}
+          isSubmitting={isSubmittingReview}
+        />
 
       </div>
     </CustomerLayout>

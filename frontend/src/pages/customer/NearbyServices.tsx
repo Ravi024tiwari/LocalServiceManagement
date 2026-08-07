@@ -10,10 +10,11 @@ import CustomerLayout from "@/layout/CustomerLayout";
 import LikeButton from "@/components/customer/LikeButton";
 import { serviceApi } from "@/services/service.service";
 import { bookingApi } from "@/services/booking.service";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchLikedServices } from "@/store/slices/likedServiceSlice";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ServiceReviewsSection } from "@/components/reviews/ServiceReviewsSection";
 
 interface ServiceItem {
   _id: string;
@@ -38,6 +39,8 @@ interface ServiceItem {
   };
   rating?: number;
   reviewsCount?: number;
+  averageRating?: number;
+  totalReviews?: number;
 }
 
 const DISTANCE_OPTIONS = [5, 10, 20, 50];
@@ -78,6 +81,7 @@ function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lon2: num
 export default function NearbyServices() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const auth = useAppSelector((state) => state.auth);
 
   // Customer Location State
   const [userLat, setUserLat] = useState<number>(23.2599);
@@ -504,7 +508,7 @@ export default function NearbyServices() {
               return (
                 <div
                   key={service._id}
-                  onClick={() => handleOpenDetailModal(service)}
+                  onClick={() => navigate(`/service/${service._id}`)}
                   className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 flex flex-col cursor-pointer"
                 >
                   <div className="relative h-48 overflow-hidden bg-gray-100">
@@ -537,8 +541,8 @@ export default function NearbyServices() {
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center gap-1">
                           <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                          <span className="text-xs font-bold text-gray-900">{service.rating || 5.0}</span>
-                          <span className="text-gray-400 text-[10px]">({service.reviewsCount || 0})</span>
+                          <span className="text-xs font-bold text-gray-900">{service.averageRating ? service.averageRating.toFixed(1) : (service.rating || "New")}</span>
+                          <span className="text-gray-400 text-[10px]">({service.totalReviews ?? service.reviewsCount ?? 0})</span>
                         </div>
 
                         <div className="text-right">
@@ -649,6 +653,17 @@ export default function NearbyServices() {
                   <p className="text-xs text-gray-600 leading-relaxed">
                     {selectedDetailService.description}
                   </p>
+
+                  {/* REVIEWS & RATINGS COMPONENT */}
+                  <div className="pt-2 border-t border-gray-100">
+                    <ServiceReviewsSection
+                      serviceId={selectedDetailService._id}
+                      serviceName={selectedDetailService.name}
+                      currentUserId={auth.user?.id || auth.user?._id}
+                      currentUserRole={auth.role || auth.user?.role}
+                      isLoggedIn={auth.isAuthenticated}
+                    />
+                  </div>
 
                   {/* SLOT & DATE SELECTION FORM */}
                   <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 space-y-3">

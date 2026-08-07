@@ -1,10 +1,11 @@
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import {
-  LayoutDashboard, Users, Briefcase, Calendar, UserCheck, Star,
-  Grid, CreditCard, BarChart3, Bell, Settings, User, ShieldCheck,
+  LayoutDashboard, Users, Briefcase, Calendar, Star,
+  Grid, CreditCard, Bell, Settings, User, ShieldCheck,
   Menu, ChevronDown, Calendar as CalendarIcon, HelpCircle, ArrowRight
 } from "lucide-react";
+import type { NavItem } from "./CustomerLayout";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,17 +15,48 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const navItems = [
+  const [adminUser, setAdminUser] = useState<{ name?: string; email?: string; avatar?: string }>({
+    name: "Super Admin",
+    email: "admin@servicehub.com",
+    avatar: "https://i.pravatar.cc/150?img=68",
+  });
+
+  const loadAdminUser = () => {
+    const stored = localStorage.getItem("user");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setAdminUser({
+          name: parsed.name || parsed.fullName || "Super Admin",
+          email: parsed.email || "admin@servicehub.com",
+          avatar: parsed.avatar && typeof parsed.avatar === "string" && parsed.avatar.trim() !== "" && !parsed.avatar.startsWith("blob:")
+            ? parsed.avatar
+            : "https://i.pravatar.cc/150?img=68",
+        });
+      } catch (e) {
+        console.error("Failed to parse user in AdminLayout", e);
+      }
+    }
+  };
+
+  useEffect(() => {
+    loadAdminUser();
+    window.addEventListener("userProfileUpdated", loadAdminUser);
+    window.addEventListener("storage", loadAdminUser);
+    return () => {
+      window.removeEventListener("userProfileUpdated", loadAdminUser);
+      window.removeEventListener("storage", loadAdminUser);
+    };
+  }, []);
+
+  const navItems:NavItem[] = [
     { name: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/admin" },
     { name: "Providers", icon: <Users size={20} />, path: "/admin/providers" },
     { name: "Services", icon: <Briefcase size={20} />, path: "/admin/services" },
     { name: "Bookings", icon: <Calendar size={20} />, path: "/admin/bookings" },
-    { name: "Customers", icon: <UserCheck size={20} />, path: "/admin/customers" },
     { name: "Reviews", icon: <Star size={20} />, path: "/admin/reviews" },
     { name: "Categories", icon: <Grid size={20} />, path: "/admin/categories" },
     { name: "Payments", icon: <CreditCard size={20} />, path: "/admin/payments" },
-    { name: "Reports", icon: <BarChart3 size={20} />, path: "/admin/reports" },
-    { name: "Notifications", icon: <Bell size={20} />, path: "/admin/notifications", badge: 6 },
     { name: "Settings", icon: <Settings size={20} />, path: "/admin/settings" },
     { name: "Admin Profile", icon: <User size={20} />, path: "/admin/profile" },
   ];
@@ -77,16 +109,17 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         {/* Super Admin Badge & Profile Promo Card */}
         <div className="mt-6 space-y-3">
           <div className="bg-emerald-50/80 p-4 rounded-2xl border border-emerald-100 text-center space-y-2">
-            <div className="w-10 h-10 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto shadow-sm">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
+            <Avatar className="w-10 h-10 border-2 border-white shadow-sm mx-auto">
+              <AvatarImage src={adminUser.avatar} alt={adminUser.name} className="object-cover" />
+              <AvatarFallback className="bg-emerald-600 text-white font-bold">SA</AvatarFallback>
+            </Avatar>
             <div>
-              <h4 className="font-bold text-gray-900 text-xs">Super Admin</h4>
-              <p className="text-[10px] text-gray-500 font-medium truncate">admin@servicehub.com</p>
+              <h4 className="font-bold text-gray-900 text-xs truncate">{adminUser.name || "Super Admin"}</h4>
+              <p className="text-[10px] text-gray-500 font-medium truncate">{adminUser.email || "admin@servicehub.com"}</p>
             </div>
             <button
               onClick={() => navigate("/admin/profile")}
-              className="w-full py-1.5 bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-600 hover:text-white rounded-lg text-[11px] font-bold transition-all shadow-sm"
+              className="w-full py-1.5 bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-600 hover:text-white rounded-lg text-[11px] font-bold transition-all shadow-sm cursor-pointer"
             >
               View Profile
             </button>
@@ -115,7 +148,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <div>
             <h1 className="text-xl font-extrabold text-gray-900">Dashboard</h1>
             <p className="text-xs text-gray-500 font-medium">
-              Welcome back, Super Admin! Here's what's happening on ServiceHub.
+              Welcome back, {adminUser.name || "Super Admin"}! Here's what's happening on ServiceHub.
             </p>
           </div>
 
@@ -138,11 +171,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-2.5 focus:outline-none cursor-pointer">
                 <Avatar className="w-9 h-9 border border-gray-200 shadow-sm">
-                  <AvatarImage src="https://i.pravatar.cc/150?img=68" />
-                  <AvatarFallback>SA</AvatarFallback>
+                  <AvatarImage src={adminUser.avatar} alt={adminUser.name} className="object-cover" />
+                  <AvatarFallback className="bg-emerald-600 text-white font-bold">SA</AvatarFallback>
                 </Avatar>
                 <div className="text-left">
-                  <span className="text-xs font-bold text-gray-900 block leading-tight">Super Admin</span>
+                  <span className="text-xs font-bold text-gray-900 block leading-tight">{adminUser.name || "Super Admin"}</span>
                   <span className="text-[10px] font-semibold text-emerald-600 block">System Administrator</span>
                 </div>
                 <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
@@ -222,9 +255,12 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 6
               </span>
             </div>
-            <Avatar className="w-8 h-8 border border-gray-200 shadow-sm">
-              <AvatarImage src="https://i.pravatar.cc/150?img=68" />
-              <AvatarFallback>SA</AvatarFallback>
+            <Avatar 
+              onClick={() => navigate("/admin/profile")}
+              className="w-8 h-8 border border-gray-200 shadow-sm cursor-pointer hover:border-emerald-500 transition-colors"
+            >
+              <AvatarImage src={adminUser.avatar} alt={adminUser.name} className="object-cover" />
+              <AvatarFallback className="bg-emerald-600 text-white font-bold">SA</AvatarFallback>
             </Avatar>
           </div>
         </header>

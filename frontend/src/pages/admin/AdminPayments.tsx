@@ -699,7 +699,7 @@ export default function AdminPayments() {
             {/* Mobile Filter Button (opens Mobile Filter Sheet) */}
             <div className="flex lg:hidden items-center gap-2 justify-between">
               <Sheet open={isFilterSheetOpen} onOpenChange={setIsFilterSheetOpen}>
-                <SheetTrigger asChild>
+                <SheetTrigger>
                   <button className="flex-1 flex items-center justify-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white py-2.5 px-4 rounded-xl text-xs font-bold transition-all shadow-sm">
                     <Filter className="w-4 h-4" />
                     <span>Filters</span>

@@ -11,20 +11,24 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import BecomeProviderModal from "@/components/provider/BecomeProviderModal";
 import CustomerAvatarMenu from "@/components/customer/CustomerAvatarMenu";
 
+export interface NavItem {
+  name: string;
+  icon: ReactNode;
+  path: string;
+  badge?: string | number;
+}
+
 export default function CustomerLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isBecomeProviderOpen, setIsBecomeProviderOpen] = useState(false);
 
-  const navItems = [
+  const navItems: NavItem[] = [
     { name: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/" },
     { name: "Nearby Services", icon: <Compass size={20} />, path: "/nearby-services" },
     { name: "Bookings", icon: <Calendar size={20} />, path: "/bookings" },
-    { name: "My Addresses", icon: <MapPin size={20} />, path: "/addresses" },
-    { name: "Wallet", icon: <Wallet size={20} />, path: "/wallet" },
     { name: "Reviews", icon: <Star size={20} />, path: "/reviews" },
     { name: "Liked Services", icon: <Heart size={20} />, path: "/liked-services" },
-    { name: "Notifications", icon: <Bell size={20} />, path: "/notifications", badge: 3 },
     { name: "Support", icon: <LifeBuoy size={20} />, path: "/support" },
     { name: "Settings", icon: <Settings size={20} />, path: "/profile" },
   ];
@@ -46,6 +50,7 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
     }
   };
 
+  
   return (
     <div className="min-h-screen bg-gray-50/50 flex">
       
@@ -190,6 +195,7 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
 
 function NavItem({ icon, label, active = false, onClick }: { icon: ReactNode; label: string; active?: boolean; onClick?: () => void }) {
   return (

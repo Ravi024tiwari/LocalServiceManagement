@@ -48,9 +48,9 @@ const initialState: ServiceState = {
 // Async Thunk to fetch provider's services & stats
 export const fetchMyServices = createAsyncThunk(
   'service/fetchMyServices',
-  async (params: { category?: string; is_available?: boolean } | undefined, { rejectWithValue }) => {
+  async (params: { category?: string; is_available?: boolean } | void, { rejectWithValue }) => {
     try {
-      const data = await serviceApi.getMyServices(params);
+      const data = await serviceApi.getMyServices(params || undefined);
       return data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch provider services');

@@ -14,6 +14,8 @@ export interface IService extends Document {
     };
     is_available: boolean;
     is_deleted: boolean;
+    averageRating?: number;
+    totalReviews?: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -75,6 +77,17 @@ const serviceSchema = new Schema<IService>(
         is_deleted: {
             type: Boolean,
             default: false
+        },
+        averageRating: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 5
+        },
+        totalReviews: {
+            type: Number,
+            default: 0,
+            min: 0
         },
     },
     { timestamps: true }

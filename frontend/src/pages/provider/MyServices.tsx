@@ -13,6 +13,7 @@ import { fetchMyServices } from "@/store/slices/serviceSlice";
 import type { ServiceItem } from "@/store/slices/serviceSlice";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ServiceReviewsSection } from "@/components/reviews/ServiceReviewsSection";
 
 const CATEGORIES = [
   "All Categories",
@@ -519,10 +520,21 @@ export default function MyServices() {
                 </div>
               </div>
 
+              {/* REAL-TIME REVIEWS & RATINGS SECTION FOR PROVIDER */}
+              <div className="pt-4 border-t border-gray-100 max-h-[300px] overflow-y-auto">
+                <ServiceReviewsSection
+                  serviceId={selectedDetailService._id}
+                  serviceName={selectedDetailService.name}
+                  currentUserId={user?._id || user?.id}
+                  currentUserRole="PROVIDER"
+                  isLoggedIn={true}
+                />
+              </div>
+
               <div className="pt-4 flex items-center justify-end gap-3">
                 <button
                   onClick={() => setSelectedDetailService(null)}
-                  className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-xl"
+                  className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-xl cursor-pointer"
                 >
                   Close
                 </button>

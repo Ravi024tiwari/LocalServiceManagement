@@ -56,6 +56,26 @@ export const submitProviderApplication = createAsyncThunk(
   }
 );
 
+// Async thunk to update provider profile details (bio, experience, availability)
+export const updateProviderProfileDetails = createAsyncThunk(
+  'providerProfile/updateProviderProfileDetails',
+  async (
+    payload: {
+      bio?: string;
+      experience_years?: number;
+      availability?: TimeSlot[];
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const data = await providerProfileApi.updateMyProfile(payload);
+      return data;
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.message || err.message || 'Failed to update provider profile');
+    }
+  }
+);
+
 const providerProfileSlice = createSlice({
   name: 'providerProfile',
   initialState,
@@ -101,6 +121,19 @@ const providerProfileSlice = createSlice({
         state.isApproved = Boolean(action.payload?.isApproved && action.payload?.verification_status === 'APPROVED');
       })
       .addCase(submitProviderApplication.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+      })
+      // Update Provider Profile Details
+      .addCase(updateProviderProfileDetails.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(updateProviderProfileDetails.fulfilled, (state, action: PayloadAction<ProviderProfileData>) => {
+        state.status = 'succeeded';
+        state.profile = { ...state.profile, ...action.payload };
+      })
+      .addCase(updateProviderProfileDetails.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
       });

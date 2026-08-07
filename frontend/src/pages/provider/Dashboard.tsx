@@ -7,9 +7,8 @@ import {
 import ProviderLayout from "../../layout/ProviderLayout";
 import { providerService } from "@/services/provider.service";
 import VerificationPendingBanner from "@/components/provider/VerificationPendingBanner";
+import ProviderAvatarMenu from "@/components/provider/ProviderAvatarMenu";
 import { Switch } from "@/components/ui/switch";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 // Redux Imports
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -73,28 +72,7 @@ export default function ProviderDashboard() {
             </div>
 
             {/* Profile Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger className="focus:outline-none">
-                <div className="flex items-center gap-3 bg-white p-1.5 pr-4 rounded-full border border-gray-200 shadow-sm cursor-pointer hover:border-emerald-300 transition-all">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src="https://i.pravatar.cc/150?img=11" />
-                    <AvatarFallback>RH</AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col items-start">
-                    <span className="text-sm font-bold text-gray-900 leading-tight">{user?.name || data.user.fullName}</span>
-                    <span className="text-[10px] font-semibold text-emerald-600 flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> {isApproved ? "Verified Provider" : "Pending Verification"}
-                    </span>
-                  </div>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                 <DropdownMenuItem><User className="mr-2 h-4 w-4" /> Profile</DropdownMenuItem>
-                 <DropdownMenuItem><Settings className="mr-2 h-4 w-4" /> Settings</DropdownMenuItem>
-                 <DropdownMenuSeparator />
-                 <DropdownMenuItem className="text-red-600"><LogOut className="mr-2 h-4 w-4" /> Logout</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ProviderAvatarMenu />
 
             {/* Top Online Status */}
             <div className="flex items-center gap-3 bg-white border border-gray-200 px-4 py-2 rounded-full shadow-sm">

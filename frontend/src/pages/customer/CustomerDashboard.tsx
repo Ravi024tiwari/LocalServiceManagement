@@ -14,6 +14,7 @@ import { serviceApi } from "@/services/service.service";
 import { bookingApi } from "@/services/booking.service";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchLikedServices } from "@/store/slices/likedServiceSlice";
+import { ServiceReviewsSection } from "@/components/reviews/ServiceReviewsSection";
 import { Button } from "@/components/ui/button";
 
 interface BackendServiceItem {
@@ -40,6 +41,8 @@ interface BackendServiceItem {
   };
   rating?: number;
   reviewsCount?: number;
+  averageRating?: number;
+  totalReviews?: number;
 }
 
 // Icon mapper for categories
@@ -68,6 +71,7 @@ const CATEGORIES = [
 export default function CustomerDashboard() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const auth = useAppSelector((state) => state.auth);
 
   // Location State
   const [userLat, setUserLat] = useState<number>(22.0797); // Default Bilaspur/Regional coords
@@ -388,8 +392,8 @@ export default function CustomerDashboard() {
                             <div className="flex items-center justify-between text-[11px] font-medium text-gray-500 bg-gray-50 p-2 rounded-xl">
                               <div className="flex items-center gap-1">
                                 <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                                <span className="text-gray-900 font-bold">{rating}</span>
-                                <span className="text-gray-400">(126)</span>
+                                <span className="text-gray-900 font-bold">{service.averageRating ? service.averageRating.toFixed(1) : (rating || "New")}</span>
+                                <span className="text-gray-400">({service.totalReviews ?? 0})</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <MapPin className="w-3.5 h-3.5 text-emerald-600" />
@@ -405,15 +409,12 @@ export default function CustomerDashboard() {
                           </div>
                         </div>
 
-                        {/* View Details Action */}
+                        {/* View Details Action -> Redirects to Full-Page Service Details */}
                         <div className="p-4 pt-0">
                           <Button 
-                            onClick={() => {
-                              setSelectedService(service);
-                              setActiveImageIndex(0);
-                            }} 
+                            onClick={() => navigate(`/service/${service._id}`)} 
                             variant="outline" 
-                            className="w-full rounded-xl border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 font-bold text-xs"
+                            className="w-full rounded-xl border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 font-bold text-xs cursor-pointer"
                           >
                             View Details ({service.images?.length || 1} Photos)
                           </Button>
@@ -611,17 +612,28 @@ export default function CustomerDashboard() {
                 </div>
               </div>
 
+              {/* REAL-TIME REVIEWS & RATINGS SECTION */}
+              <div className="pt-4 border-t border-gray-100">
+                <ServiceReviewsSection
+                  serviceId={selectedService._id}
+                  serviceName={selectedService.name}
+                  currentUserId={auth.user?.id || auth.user?._id}
+                  currentUserRole={auth.role || auth.user?.role}
+                  isLoggedIn={auth.isAuthenticated}
+                />
+              </div>
+
               {/* Book Now Button */}
               <div className="flex gap-3">
-                <Button 
+                <button 
                   onClick={() => {
                     setSelectedService(null);
                     navigate("/liked-services");
                   }} 
-                  className="w-full py-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-base font-bold shadow-lg shadow-emerald-200"
+                  className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-base font-bold shadow-lg shadow-emerald-200 transition-all cursor-pointer"
                 >
                   Book Service Now (₹{selectedService.price})
-                </Button>
+                </button>
               </div>
 
             </div>

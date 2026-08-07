@@ -8,6 +8,8 @@ import adminDashboardReducer from './slices/adminDashboardSlice';
 import adminProviderReducer from './slices/adminProviderSlice';
 import adminBookingReducer from './slices/adminBookingSlice';
 import adminPaymentReducer from './slices/adminPaymentSlice';
+import adminReviewReducer from './slices/adminReviewSlice';
+import adminCategoryReducer from './slices/adminCategorySlice';
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +22,8 @@ export const store = configureStore({
     adminProvider: adminProviderReducer,
     adminBooking: adminBookingReducer,
     adminPayment: adminPaymentReducer,
+    adminReview: adminReviewReducer,
+    adminCategory: adminCategoryReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
