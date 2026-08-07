@@ -46,7 +46,11 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
         if (phone) updateData.phone = phone;
         if (location !== undefined) updateData.location = location;
         if (bio !== undefined) updateData.bio = bio;
-        if (avatar !== undefined) updateData.avatar = avatar;
+        
+        // Never save blob: URLs from client browser preview into database
+        if (avatar !== undefined && typeof avatar === 'string' && !avatar.startsWith('blob:')) {
+            updateData.avatar = avatar;
+        }
 
         // 2. Handle the Avatar Image file upload if present
         if (req.file) {
@@ -55,9 +59,17 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
                 const cloudinaryResponse = await uploadOnCloudinary(imageBuffer);
                 if (cloudinaryResponse && cloudinaryResponse.secure_url) {
                     updateData.avatar = cloudinaryResponse.secure_url;
+                } else {
+                    // Fallback to Base64 Data URI if Cloudinary is not configured or fails
+                    const mimeType = req.file.mimetype || 'image/png';
+                    const base64Data = imageBuffer.toString('base64');
+                    updateData.avatar = `data:${mimeType};base64,${base64Data}`;
                 }
             } catch (err) {
-                console.error("Cloudinary upload warning:", err);
+                console.error("Cloudinary upload warning, using base64 fallback:", err);
+                const mimeType = req.file.mimetype || 'image/png';
+                const base64Data = req.file.buffer.toString('base64');
+                updateData.avatar = `data:${mimeType};base64,${base64Data}`;
             }
         }
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router";
 import { Star, MapPin, AlertCircle, ShieldCheck } from "lucide-react";
 import LikeButton from "./LikeButton";
 import { type LikedServiceItem } from "@/services/likedService.api";
@@ -9,6 +10,7 @@ interface LikedServiceCardProps {
 }
 
 export const LikedServiceCard: React.FC<LikedServiceCardProps> = ({ item, onBookNow }) => {
+  const navigate = useNavigate();
   const { service, distanceKm, isWithinRange } = item;
   const provider = service.provider;
 
@@ -40,7 +42,10 @@ export const LikedServiceCard: React.FC<LikedServiceCardProps> = ({ item, onBook
     service.images && service.images.length > 0 ? service.images[0] : getFallbackImage(service.category);
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col justify-between group">
+    <div
+      onClick={() => navigate(`/service/${item.service_id}`)}
+      className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col justify-between group cursor-pointer"
+    >
       {/* Top Image Section */}
       <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
         <img
@@ -65,7 +70,7 @@ export const LikedServiceCard: React.FC<LikedServiceCardProps> = ({ item, onBook
         </div>
 
         {/* Like Button */}
-        <div className="absolute top-3 right-3 z-10">
+        <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
           <LikeButton serviceId={item.service_id} />
         </div>
 
@@ -120,12 +125,12 @@ export const LikedServiceCard: React.FC<LikedServiceCardProps> = ({ item, onBook
         </div>
 
         {/* Action Button */}
-        <div>
+        <div onClick={(e) => e.stopPropagation()}>
           {isWithinRange ? (
             <button
               type="button"
               onClick={() => onBookNow(item)}
-              className="w-full py-2.5 bg-white hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-600 rounded-xl font-bold text-xs transition-all shadow-sm active:scale-[0.98]"
+              className="w-full py-2.5 bg-white hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-600 rounded-xl font-bold text-xs transition-all shadow-sm active:scale-[0.98] cursor-pointer"
             >
               Book Now
             </button>

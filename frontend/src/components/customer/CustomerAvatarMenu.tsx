@@ -132,11 +132,7 @@ export default function CustomerAvatarMenu() {
 
         {/* Update Profile Banner/CTA */}
         <div
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            navigate("/profile");
-          }}
+          onClick={() => navigate("/profile")}
           className="mx-1 my-1.5 p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl cursor-pointer transition-all flex items-center justify-between group shadow-sm"
         >
           <div className="flex items-center gap-2.5">
@@ -156,11 +152,7 @@ export default function CustomerAvatarMenu() {
         {/* Interactive Menu Items */}
         <div className="space-y-0.5">
           <DropdownMenuItem
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              navigate("/profile");
-            }}
+            onClick={() => navigate("/profile")}
             className="cursor-pointer py-2.5 px-3 rounded-xl focus:bg-emerald-50 focus:text-emerald-900 transition-colors flex items-center justify-between"
           >
             <div className="flex items-center gap-3 font-semibold text-xs text-gray-700">
@@ -171,11 +163,7 @@ export default function CustomerAvatarMenu() {
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              navigate("/bookings");
-            }}
+            onClick={() => navigate("/bookings")}
             className="cursor-pointer py-2.5 px-3 rounded-xl focus:bg-emerald-50 focus:text-emerald-900 transition-colors flex items-center justify-between"
           >
             <div className="flex items-center gap-3 font-semibold text-xs text-gray-700">
@@ -186,11 +174,7 @@ export default function CustomerAvatarMenu() {
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              navigate("/addresses");
-            }}
+            onClick={() => navigate("/addresses")}
             className="cursor-pointer py-2.5 px-3 rounded-xl focus:bg-emerald-50 focus:text-emerald-900 transition-colors flex items-center justify-between"
           >
             <div className="flex items-center gap-3 font-semibold text-xs text-gray-700">
@@ -201,11 +185,7 @@ export default function CustomerAvatarMenu() {
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              navigate("/wallet");
-            }}
+            onClick={() => navigate("/wallet")}
             className="cursor-pointer py-2.5 px-3 rounded-xl focus:bg-emerald-50 focus:text-emerald-900 transition-colors flex items-center justify-between"
           >
             <div className="flex items-center gap-3 font-semibold text-xs text-gray-700">
@@ -216,11 +196,7 @@ export default function CustomerAvatarMenu() {
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              navigate("/profile");
-            }}
+            onClick={() => navigate("/profile")}
             className="cursor-pointer py-2.5 px-3 rounded-xl focus:bg-emerald-50 focus:text-emerald-900 transition-colors flex items-center justify-between"
           >
             <div className="flex items-center gap-3 font-semibold text-xs text-gray-700">
@@ -235,11 +211,7 @@ export default function CustomerAvatarMenu() {
 
         {/* Logout */}
         <DropdownMenuItem
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleLogout();
-          }}
+          onClick={handleLogout}
           className="cursor-pointer py-2.5 px-3 rounded-xl text-red-600 focus:text-red-700 focus:bg-red-50 transition-colors flex items-center gap-3 font-bold text-xs"
         >
           <LogOut className="h-4 w-4 text-red-500" />

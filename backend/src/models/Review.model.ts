@@ -2,7 +2,7 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface IReview extends Document {
     service_id: Types.ObjectId;
-    booking_id: Types.ObjectId;
+    booking_id?: Types.ObjectId;
     customer_id: Types.ObjectId;
     provider_id: Types.ObjectId;
     rating: number;
@@ -21,8 +21,8 @@ const reviewSchema = new Schema<IReview>(
         booking_id: {
             type: Schema.Types.ObjectId,
             ref: 'Booking',
-            required: true,
-            unique: true
+            required: false,
+            default: null
         },
         customer_id: {
             type: Schema.Types.ObjectId,
@@ -40,12 +40,13 @@ const reviewSchema = new Schema<IReview>(
             min: 1,
             max: 5
         },
-        comment: { type: String, trim: true },
+        comment: { type: String, trim: true, default: '' },
     },
     { timestamps: true }
 );
 
-// Index for fast lookup of reviews belonging to a specific provider or service
+// Unique index: 1 email / customer user account can only leave 1 review per service
+reviewSchema.index({ service_id: 1, customer_id: 1 }, { unique: true });
 reviewSchema.index({ provider_id: 1 });
 reviewSchema.index({ service_id: 1 });
 
