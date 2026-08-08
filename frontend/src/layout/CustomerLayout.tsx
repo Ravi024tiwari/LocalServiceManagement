@@ -27,7 +27,6 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
     { name: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/" },
     { name: "Nearby Services", icon: <Compass size={20} />, path: "/nearby-services" },
     { name: "Bookings", icon: <Calendar size={20} />, path: "/bookings" },
-    { name: "Reviews", icon: <Star size={20} />, path: "/reviews" },
     { name: "Liked Services", icon: <Heart size={20} />, path: "/liked-services" },
     { name: "Support", icon: <LifeBuoy size={20} />, path: "/support" },
     { name: "Settings", icon: <Settings size={20} />, path: "/profile" },
@@ -41,7 +40,6 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
       case "/nearby-services": return "Nearby Services";
       case "/addresses": return "Saved Addresses";
       case "/wallet": return "My Wallet";
-      case "/reviews": return "Reviews & Ratings";
       case "/liked-services":
       case "/saved": return "Liked Services";
       case "/notifications": return "Notifications";

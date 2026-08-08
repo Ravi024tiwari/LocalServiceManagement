@@ -35,7 +35,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
         }
 
         // Extract basic text fields from the request body
-        const { name, fullName, email, phone, location, avatar, bio } = req.body;
+        const { name, fullName, email, phone, location, avatar, bio, coordinates, longitude, latitude } = req.body;
 
         const updateData: any = {};
 
@@ -46,6 +46,19 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
         if (phone) updateData.phone = phone;
         if (location !== undefined) updateData.location = location;
         if (bio !== undefined) updateData.bio = bio;
+
+        // Handle GeoJSON coordinates [lng, lat]
+        if (coordinates && Array.isArray(coordinates) && coordinates.length === 2) {
+            updateData.current_location = {
+                type: 'Point',
+                coordinates: [Number(coordinates[0]), Number(coordinates[1])]
+            };
+        } else if (longitude !== undefined && latitude !== undefined) {
+            updateData.current_location = {
+                type: 'Point',
+                coordinates: [Number(longitude), Number(latitude)]
+            };
+        }
         
         // Never save blob: URLs from client browser preview into database
         if (avatar !== undefined && typeof avatar === 'string' && !avatar.startsWith('blob:')) {

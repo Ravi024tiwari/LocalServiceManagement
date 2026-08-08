@@ -6,6 +6,7 @@ import {
   CheckCircle2, CreditCard, Crosshair, Bell, ShieldCheck, LifeBuoy, X,
   Calendar, Loader2, AlertCircle, Bookmark
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 import CustomerLayout from "@/layout/CustomerLayout";
 import CustomerAvatarMenu from "@/components/customer/CustomerAvatarMenu";
@@ -15,7 +16,7 @@ import { bookingApi } from "@/services/booking.service";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchLikedServices } from "@/store/slices/likedServiceSlice";
 import { ServiceReviewsSection } from "@/components/reviews/ServiceReviewsSection";
-import { Button } from "@/components/ui/button";
+import { useLocationDetector } from "@/hooks/useLocationDetector";
 
 interface BackendServiceItem {
   _id: string;
@@ -183,8 +184,10 @@ export default function CustomerDashboard() {
     });
   }, [nearbyServices, selectedCategory, searchQuery]);
 
+  const { locationName: dynamicLocation, detectLocation, isDetecting } = useLocationDetector();
+
   const displayName = currentUser.name;
-  const displayLocation = currentUser.location || userAddress;
+  const displayLocation = dynamicLocation || currentUser.location || userAddress;
 
   return (
     <CustomerLayout>
@@ -199,8 +202,12 @@ export default function CustomerDashboard() {
             <p className="text-gray-500 text-sm mt-1">What service do you need today in your region?</p>
           </div>
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-full shadow-sm cursor-pointer hover:border-emerald-300 transition-colors">
-              <MapPin className="w-4 h-4 text-emerald-600" />
+            <div 
+              onClick={detectLocation}
+              title="Click to refresh current location dynamically"
+              className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-full shadow-sm cursor-pointer hover:border-emerald-300 transition-colors"
+            >
+              <MapPin className={`w-4 h-4 text-emerald-600 ${isDetecting ? "animate-bounce" : ""}`} />
               <span className="text-sm font-medium text-gray-700">{displayLocation}</span>
               <ChevronDown className="w-4 h-4 text-gray-400" />
             </div>

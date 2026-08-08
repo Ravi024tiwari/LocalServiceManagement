@@ -1,4 +1,7 @@
+import mongoose from 'mongoose';
 import { Booking, IBooking } from '../models/Booking.model.js';
+import { Service } from '../models/Service.model.js';
+import { ProviderProfile } from '../models/ProviderProfile.model.js';
 
 export const checkSlotAvailability = async (
     serviceId: string,
@@ -50,6 +53,14 @@ export const checkSlotAvailability = async (
 };
 
 export const createBooking = async (bookingData: Partial<IBooking>) => {
+    // Auto-populate provider_id from Service if missing
+    if (!bookingData.provider_id && bookingData.service_id) {
+        const service = await Service.findById(bookingData.service_id);
+        if (service) {
+            bookingData.provider_id = service.provider_id;
+        }
+    }
+
     // Conflict Check: Ensure provider/service isn't double-booked
     const availability = await checkSlotAvailability(
         bookingData.service_id?.toString() || '',
@@ -121,8 +132,30 @@ export const getBookings = async (
     roleType: 'customer' | 'provider',
     statusFilter?: string
 ) => {
-    // Determine which field to query based on the user's role
-    const query: any = roleType === 'customer' ? { customer_id: userId } : { provider_id: userId };
+    let query: any = {};
+
+    if (roleType === 'customer') {
+        query.customer_id = userId;
+    } else {
+        const objectId = new mongoose.Types.ObjectId(userId);
+        const profile = await ProviderProfile.findOne({ user_id: userId });
+        const possibleIds: any[] = [objectId, userId, userId.toString()];
+        if (profile?._id) {
+            possibleIds.push(profile._id);
+            possibleIds.push(profile._id.toString());
+        }
+
+        const providerServices = await Service.find({
+            provider_id: { $in: possibleIds },
+            is_deleted: { $ne: true }
+        }).select('_id');
+        const providerServiceIds = providerServices.map((s) => s._id);
+
+        query.$or = [
+            { provider_id: { $in: possibleIds } },
+            { service_id: { $in: providerServiceIds } }
+        ];
+    }
 
     // Apply status filter if provided (e.g., ?status=PENDING)
     if (statusFilter) {
@@ -130,7 +163,7 @@ export const getBookings = async (
     }
 
     return await Booking.find(query)
-        .populate('service_id', 'title category price') // Get service details
+        .populate('service_id', 'name title category price images') // Get service details
         .populate(
             roleType === 'customer' ? 'provider_id' : 'customer_id',
             'name email phone avatar'

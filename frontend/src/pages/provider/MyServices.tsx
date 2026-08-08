@@ -28,12 +28,16 @@ const CATEGORIES = [
 
 const STATUS_FILTERS = ["All Status", "Active", "Inactive", "Draft"];
 
+import { useLocationDetector } from "@/hooks/useLocationDetector";
+
 export default function MyServices() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { locationName: dynamicLocation, detectLocation, isDetecting } = useLocationDetector();
 
   // Redux State
   const { user } = useAppSelector((state) => state.auth);
+  const displayLocation = dynamicLocation || user?.location || "Bhopal, Madhya Pradesh";
   const { myServices, stats, isLoading } = useAppSelector((state) => state.service);
 
   // Filter & Search Controls
@@ -129,9 +133,13 @@ export default function MyServices() {
 
           <div className="hidden lg:flex items-center gap-4">
             {/* Location Selector Badge */}
-            <div className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-full shadow-sm cursor-pointer hover:border-emerald-300 transition-colors">
-              <MapPin className="w-4 h-4 text-emerald-600" />
-              <span className="text-sm font-medium text-gray-700">{user?.location || "Bhopal, Madhya Pradesh"}</span>
+            <div 
+              onClick={detectLocation}
+              title="Click to refresh current location dynamically"
+              className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-full shadow-sm cursor-pointer hover:border-emerald-300 transition-colors"
+            >
+              <MapPin className={`w-4 h-4 text-emerald-600 ${isDetecting ? "animate-bounce" : ""}`} />
+              <span className="text-sm font-medium text-gray-700">{displayLocation}</span>
               <ChevronDown className="w-4 h-4 text-gray-400" />
             </div>
 

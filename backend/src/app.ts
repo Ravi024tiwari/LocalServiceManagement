@@ -17,6 +17,7 @@ import adminPaymentRouter from "./routes/adminPayment.route.js"
 import adminReviewRouter from "./routes/adminReview.route.js"
 import adminCategoryRouter from "./routes/adminCategory.route.js"
 import reviewRouter from "./routes/review.route.js"
+import dashboardRouter from "./routes/dashboard.route.js"
 
 const app = express()
 
@@ -42,6 +43,7 @@ app.get("/health", (req: Request, res: Response) => {
 
 app.use("/api/auth", authRoute)
 app.use("/api/user", userRouter)
+app.use("/api/dashboard", dashboardRouter)
 app.use("/api/service", serviceRouter)
 app.use("/api/provider-profile", ProviderProfileRouter)
 app.use("/api/booking", bookingRouter)

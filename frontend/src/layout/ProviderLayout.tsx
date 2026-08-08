@@ -2,8 +2,8 @@ import { type ReactNode, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import {
   LayoutDashboard, Briefcase, PlusCircle, Calendar, Users, Star,
-  IndianRupee, LineChart, Bell, User, Settings, ShieldCheck,
-  Menu, Power, MoreHorizontal
+  IndianRupee, Bell, User, Settings, ShieldCheck,
+  Menu, Power
 } from "lucide-react";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -51,9 +51,8 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
     { name: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/provider" },
     { name: "My Services", icon: <Briefcase size={20} />, path: "/provider/services" },
     { name: "Create Service", icon: <PlusCircle size={20} />, path: "/provider/create-service" },
-    { name: "Bookings", icon: <Calendar size={20} />, path: "/provider/bookings", badge: 18 },
+    { name: "Bookings", icon: <Calendar size={20} />, path: "/provider/bookings" },
     { name: "Customers", icon: <Users size={20} />, path: "/provider/customers" },
-    { name: "Reviews", icon: <Star size={20} />, path: "/provider/reviews" },
     { name: "Earnings", icon: <IndianRupee size={20} />, path: "/provider/earnings" },
     { name: "Profile", icon: <User size={20} />, path: "/provider/profile" },
     { name: "Settings", icon: <Settings size={20} />, path: "/provider/settings" },

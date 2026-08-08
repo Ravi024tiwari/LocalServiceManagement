@@ -11,9 +11,13 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
+import { useLocationDetector } from "@/hooks/useLocationDetector";
+import { MapPin } from "lucide-react";
+
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { locationName: dynamicLocation, detectLocation, isDetecting } = useLocationDetector();
 
   const [adminUser, setAdminUser] = useState<{ name?: string; email?: string; avatar?: string }>({
     name: "Super Admin",
@@ -153,6 +157,16 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Dynamic Location Badge */}
+            <div 
+              onClick={detectLocation}
+              title="Click to detect admin location dynamically"
+              className="flex items-center gap-2 bg-white border border-gray-200 px-3.5 py-1.5 rounded-full text-xs font-bold text-gray-700 shadow-sm hover:border-emerald-300 transition-colors cursor-pointer"
+            >
+              <MapPin className={`w-3.5 h-3.5 text-emerald-600 ${isDetecting ? "animate-bounce" : ""}`} />
+              <span>{dynamicLocation || "Bhopal, Madhya Pradesh"}</span>
+            </div>
+
             {/* Date Range Picker */}
             <div className="flex items-center gap-2 bg-white border border-gray-200 px-3.5 py-1.5 rounded-full text-xs font-bold text-gray-700 shadow-sm hover:border-emerald-300 transition-colors cursor-pointer">
               <span>May 20 - Jun 20, 2025</span>

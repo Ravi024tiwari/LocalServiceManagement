@@ -93,7 +93,6 @@ export default function App() {
             <Route path="/bookings" element={<CustomerBookings />} />
             <Route path="/liked-services" element={<LikedServices />} />
             <Route path="/saved" element={<LikedServices />} />
-            <Route path="/reviews" element={<ServiceReviewsPage />} />
             <Route path="/service/:serviceId/reviews" element={<ServiceReviewsPage />} />
             <Route path="/support" element={<SupportPage />} />
             <Route path="/provider" element={<ProviderDashboard />} />
@@ -103,7 +102,6 @@ export default function App() {
             <Route path="/provider/edit-service/:id" element={<CreateService />} />
             <Route path="/provider/bookings" element={<ProviderBookings />} />
             <Route path="/provider/customers" element={<ProviderCustomers />} />
-            <Route path="/provider/reviews" element={<ServiceReviewsPage />} />
             <Route path="/provider/profile" element={<ProviderProfilePage />} />
             <Route path="/provider/settings" element={<ProviderProfilePage />} />
             <Route path="/admin" element={<AdminDashboard />} />
