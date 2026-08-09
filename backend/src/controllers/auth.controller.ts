@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import * as authService from '../services/auth.service.js';
+import { User } from '../models/User.model.js';
 
 // Production-grade cookie security settings
 const cookieOptions = {
@@ -74,6 +75,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
     try {
+        const userId = (req as any).user?.id || (req as any).user?._id || req.body?.userId;
+        if (userId) {
+            await User.findByIdAndUpdate(userId, { isOnline: false });
+        }
+
         res.status(200)
             .clearCookie('token', cookieOptions) // Clears the auth cookie
             .json({

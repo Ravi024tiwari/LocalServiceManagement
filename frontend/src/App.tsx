@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-
 
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import LandingPage from "./pages/public/LandingPage";
 
 import Dashboard from "./pages/customer/CustomerDashboard";
 import CustomerProfile from "./pages/customer/CustomerProfile";
@@ -77,8 +78,9 @@ export default function App() {
       <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
         <Routes>
           {/* ============================== */}
-          {/* PUBLIC AUTHENTICATION ROUTES   */}
+          {/* PUBLIC ROUTES                  */}
           {/* ============================== */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           
@@ -86,8 +88,8 @@ export default function App() {
           {/* PROTECTED APPLICATION ROUTES   */}
           {/* ============================== */}
           <Route element={<ProtectedRoute />}>
-            {/* Role-based home route -> Customer Dashboard by default, Provider/Admin auto-redirected */}
-            <Route path="/" element={<RoleBasedHome />} />
+            <Route path="/customer" element={<Dashboard />} />
+            <Route path="/dashboard" element={<RoleBasedHome />} />
             <Route path="/nearby-services" element={<NearbyServices />} />
             <Route path="/service/:serviceId" element={<ServiceDetailsPage />} />
             <Route path="/bookings" element={<CustomerBookings />} />
@@ -119,7 +121,6 @@ export default function App() {
           {/* ============================== */}
           {/* FALLBACK ROUTE                 */}
           {/* ============================== */}
-          {/* Catch-all route for 404 - Redirects to Home (which will auto-redirect to login if not authenticated) */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

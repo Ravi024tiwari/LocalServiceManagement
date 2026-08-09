@@ -10,6 +10,7 @@ export interface UserState {
   role?: string;
   avatar?: string;
   location?: string;
+  isOnline?: boolean;
 }
 
 interface AuthState {
@@ -101,6 +102,13 @@ const authSlice = createSlice({
       localStorage.setItem("user", JSON.stringify(state.user));
     },
 
+    setOnlineStatus: (state, action: PayloadAction<boolean>) => {
+      if (state.user) {
+        state.user.isOnline = action.payload;
+        localStorage.setItem("user", JSON.stringify(state.user));
+      }
+    },
+
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -113,5 +121,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, updateUserRole, updateUserProfile, logout } = authSlice.actions;
+export const { setCredentials, updateUserRole, updateUserProfile, setOnlineStatus, logout } = authSlice.actions;
 export default authSlice.reducer;

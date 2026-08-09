@@ -13,11 +13,13 @@ import ProviderAvatarMenu from "@/components/provider/ProviderAvatarMenu";
 import { Switch } from "@/components/ui/switch";
 
 import { useLocationDetector } from "@/hooks/useLocationDetector";
+import { api } from "@/services/api";
 
 // Redux Imports
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchProviderProfile } from "@/store/slices/providerProfileSlice";
 import { fetchMyServices } from "@/store/slices/serviceSlice";
+import { setOnlineStatus } from "@/store/slices/authSlice";
 import type { ServiceItem } from "@/store/slices/serviceSlice";
 
 export default function ProviderDashboard() {
@@ -31,11 +33,30 @@ export default function ProviderDashboard() {
 
   const [data, setData] = useState<any>(null);
   const [loadingDashboard, setLoadingDashboard] = useState(true);
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline, setIsOnline] = useState<boolean>(user?.isOnline ?? true);
   const [selectedDetailService, setSelectedDetailService] = useState<ServiceItem | null>(null);
+
+  // Sync isOnline with Redux user state
+  useEffect(() => {
+    if (user?.isOnline !== undefined) {
+      setIsOnline(user.isOnline);
+    }
+  }, [user?.isOnline]);
 
   // Dynamic Location Detector Hook (Must be called unconditionally at top level)
   const { locationName: dynamicLocation, detectLocation, isDetecting } = useLocationDetector();
+
+  const handleToggleOnline = async (checked: boolean) => {
+    try {
+      setIsOnline(checked);
+      dispatch(setOnlineStatus(checked));
+      await api.patch('/user/online-status', { isOnline: checked });
+    } catch (e) {
+      console.error("Failed to update online status:", e);
+      setIsOnline(!checked);
+      dispatch(setOnlineStatus(!checked));
+    }
+  };
 
   const handleRefreshStatus = () => {
     dispatch(fetchProviderProfile());
@@ -129,7 +150,7 @@ export default function ProviderDashboard() {
                 <span className={`w-2 h-2 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse" : "bg-gray-400"}`} />
                 <span className={`text-xs font-bold ${isOnline ? "text-emerald-700" : "text-gray-500"}`}>{isOnline ? "Online" : "Offline"}</span>
               </div>
-              <Switch checked={isOnline} onCheckedChange={setIsOnline} className="data-[state=checked]:bg-emerald-600 h-5 w-9 [&_span]:h-4 [&_span]:w-4" />
+              <Switch checked={isOnline} onCheckedChange={handleToggleOnline} className="data-[state=checked]:bg-emerald-600 h-5 w-9 [&_span]:h-4 [&_span]:w-4" />
             </div>
           </div>
         </div>

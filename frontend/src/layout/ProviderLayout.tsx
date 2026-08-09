@@ -9,11 +9,35 @@ import {
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import ProviderAvatarMenu from "@/components/provider/ProviderAvatarMenu";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setOnlineStatus } from "@/store/slices/authSlice";
+import { api } from "@/services/api";
 
 export default function ProviderLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [isOnline, setIsOnline] = useState(true);
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
+
+  const [isOnline, setIsOnline] = useState<boolean>(user?.isOnline ?? true);
+
+  useEffect(() => {
+    if (user?.isOnline !== undefined) {
+      setIsOnline(user.isOnline);
+    }
+  }, [user?.isOnline]);
+
+  const handleToggleOnline = async (checked: boolean) => {
+    try {
+      setIsOnline(checked);
+      dispatch(setOnlineStatus(checked));
+      await api.patch("/user/online-status", { isOnline: checked });
+    } catch (e) {
+      console.error("Failed to update online status in layout:", e);
+      setIsOnline(!checked);
+      dispatch(setOnlineStatus(!checked));
+    }
+  };
 
   const [providerUser, setProviderUser] = useState<{ name?: string; avatar?: string }>({
     name: "Provider",
@@ -109,7 +133,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
                 {isOnline ? "You are Online" : "Go Offline"}
               </span>
             </div>
-            <Switch checked={isOnline} onCheckedChange={setIsOnline} className="data-[state=checked]:bg-emerald-600" />
+            <Switch checked={isOnline} onCheckedChange={handleToggleOnline} className="data-[state=checked]:bg-emerald-600" />
           </div>
         </div>
       </aside>

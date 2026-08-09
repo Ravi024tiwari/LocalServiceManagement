@@ -108,3 +108,28 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
         res.status(400).json({ success: false, message: error.message || 'Failed to update profile' });
     }
 };
+
+export const updateOnlineStatus = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = (req as any).user?.id || (req as any).user?._id;
+        if (!userId) {
+            res.status(401).json({ success: false, message: 'Authentication required' });
+            return;
+        }
+
+        const { isOnline } = req.body;
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { isOnline: Boolean(isOnline) },
+            { new: true }
+        ).select('-password');
+
+        res.status(200).json({
+            success: true,
+            message: `User is now ${isOnline ? 'Online' : 'Offline'}`,
+            data: updatedUser
+        });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message || 'Failed to update online status' });
+    }
+};

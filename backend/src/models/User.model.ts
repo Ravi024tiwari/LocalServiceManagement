@@ -9,6 +9,7 @@ export interface IUser extends Document {
     avatar?: string;
     location?: string;
     bio?: string;
+    isOnline?: boolean;
     current_location: {
         type: 'Point';
         coordinates: number[]; // [longitude, latitude]
@@ -56,6 +57,10 @@ const userSchema = new Schema<IUser>(
         bio: {
             type: String,
             default: ''
+        },
+        isOnline: {
+            type: Boolean,
+            default: false
         },
         // GeoJSON for geospatial queries
         current_location: {

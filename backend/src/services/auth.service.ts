@@ -26,6 +26,7 @@ export const registerUser = async (userData: Partial<IUser>): Promise<AuthRespon
         email,
         password: hashedPassword,
         phone,
+        isOnline: true,
         ...(role && { role }),
     });
 
@@ -76,6 +77,9 @@ export const loginUser = async (email: string, password: string): Promise<AuthRe
     if (!isMatch) {
         throw new Error('Invalid email or password');
     }
+
+    user.isOnline = true;
+    await user.save();
 
     const token = jwt.sign(
         { id: user._id, role: user.role },
