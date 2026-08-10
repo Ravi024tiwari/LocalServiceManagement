@@ -1,33 +1,34 @@
 import mongoose from "mongoose";
-import dns from "dns";
+
+// Cache connection for serverless environments (Vercel)
+let isConnected = false; 
 
 const dbConnect = async () => {
+    // If already connected, return early
+    if (isConnected) {
+        console.log("Using existing MongoDB connection");
+        return;
+    }
+
     try {
-        // Fallback check to ensure the URL exists
         if (!process.env.MONGODB_URL) {
             throw new Error("MONGODB_URL is not defined in the environment variables.");
         }
 
-        // 🚀 FORCE NODE.JS TO USE GOOGLE & CLOUDFLARE DNS
-        // This bypasses ISP-level blocking for SRV records
-        dns.setServers([
-            '8.8.8.8', // Google Public DNS (Primary)
-            '8.8.4.4', // Google Public DNS (Secondary)
-            '1.1.1.1'  // Cloudflare DNS (Backup)
-        ]);
+        console.log("Attempting MongoDB connection...");
 
-        console.log("Custom DNS configured. Attempting MongoDB connection...");
-
-        // Connect using the standard SRV string from your .env
         const connectionInstance = await mongoose.connect(process.env.MONGODB_URL, {
-            family: 4, // Force IPv4 to prevent IPv6 routing issues
-            serverSelectionTimeoutMS: 5000,
+            // bufferCommands: false prevents Mongoose from hanging indefinitely
+            bufferCommands: false, 
         });
 
-        console.log(`\nMongoDB connected successfully! DB Host: ${connectionInstance.connection.host}`);
+        isConnected = connectionInstance.connections[0].readyState === 1;
+        console.log(`MongoDB connected successfully! DB Host: ${connectionInstance.connection.host}`);
+        
     } catch (error) {
         console.error("MongoDB connection failed:", error);
-        process.exit(1);
+        // Do NOT use process.exit(1) on Vercel. Just throw the error.
+        throw error; 
     }
 }
 
