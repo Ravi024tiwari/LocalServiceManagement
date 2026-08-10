@@ -11,6 +11,7 @@ import { serviceApi } from "@/services/service.service";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchMyServices } from "@/store/slices/serviceSlice";
 import type { ServiceItem } from "@/store/slices/serviceSlice";
+import { logout } from "@/store/slices/authSlice";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ServiceReviewsSection } from "@/components/reviews/ServiceReviewsSection";
@@ -173,7 +174,7 @@ export default function MyServices() {
                 <DropdownMenuItem><User className="mr-2 h-4 w-4" /> Profile</DropdownMenuItem>
                 <DropdownMenuItem><Settings className="mr-2 h-4 w-4" /> Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600"><LogOut className="mr-2 h-4 w-4" /> Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { dispatch(logout()); navigate("/login", { replace: true }); }} className="text-red-600 cursor-pointer"><LogOut className="mr-2 h-4 w-4" /> Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

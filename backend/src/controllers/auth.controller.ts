@@ -79,7 +79,6 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
         if (userId) {
             await User.findByIdAndUpdate(userId, { isOnline: false });
         }
-
         res.status(200)
             .clearCookie('token', cookieOptions) // Clears the auth cookie
             .json({

@@ -15,6 +15,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { useAppDispatch } from "@/store/hooks";
+import { logout } from "@/store/slices/authSlice";
+
 export function getFirstLetter(name?: string): string {
   if (!name || !name.trim()) return "U";
   return name.trim().charAt(0).toUpperCase();
@@ -22,6 +25,7 @@ export function getFirstLetter(name?: string): string {
 
 export default function CustomerAvatarMenu() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [imgError, setImgError] = useState(false);
   const [user, setUser] = useState<{
     name?: string;
@@ -71,9 +75,8 @@ export default function CustomerAvatarMenu() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
+    dispatch(logout());
+    navigate("/login", { replace: true });
   };
 
   const firstLetter = getFirstLetter(user.name);

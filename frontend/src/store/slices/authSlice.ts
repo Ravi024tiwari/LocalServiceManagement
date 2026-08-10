@@ -117,6 +117,9 @@ const authSlice = createSlice({
 
       localStorage.removeItem("user");
       localStorage.removeItem("token");
+      localStorage.removeItem("user_location");
+      localStorage.removeItem("user_coords");
+      localStorage.clear();
     },
   },
 });

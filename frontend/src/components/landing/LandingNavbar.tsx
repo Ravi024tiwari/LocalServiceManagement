@@ -14,6 +14,8 @@ import {
   HelpCircle,
   Tag
 } from "lucide-react";
+import { useAppDispatch } from "@/store/hooks";
+import { logout } from "@/store/slices/authSlice";
 
 interface UserProfile {
   name?: string;
@@ -24,6 +26,7 @@ interface UserProfile {
 
 export const LandingNavbar: FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState("Bangalore, Karnataka");
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
@@ -55,12 +58,11 @@ export const LandingNavbar: FC = () => {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    dispatch(logout());
     setIsAuthenticated(false);
     setUser(null);
     setIsUserDropdownOpen(false);
-    navigate("/");
+    navigate("/login", { replace: true });
   };
 
   const getDashboardRoute = () => {

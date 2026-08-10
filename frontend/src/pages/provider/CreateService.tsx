@@ -12,6 +12,8 @@ import { serviceApi } from "@/services/service.service";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useAppDispatch } from "@/store/hooks";
+import { logout } from "@/store/slices/authSlice";
 
 const CATEGORIES = [
   "Appliance Repair",
@@ -28,6 +30,7 @@ const CATEGORIES = [
 
 export default function CreateService() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { id: serviceId } = useParams<{ id?: string }>();
   const routerLocation = useLocation();
 
@@ -277,7 +280,7 @@ export default function CreateService() {
                 <DropdownMenuItem><User className="mr-2 h-4 w-4" /> Profile</DropdownMenuItem>
                 <DropdownMenuItem><Settings className="mr-2 h-4 w-4" /> Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600"><LogOut className="mr-2 h-4 w-4" /> Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { dispatch(logout()); navigate("/login", { replace: true }); }} className="text-red-600 cursor-pointer"><LogOut className="mr-2 h-4 w-4" /> Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

@@ -10,9 +10,12 @@ import AuthLayout from "@/layout/authLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAppDispatch } from "@/store/hooks";
+import { setCredentials } from "@/store/slices/authSlice";
 
 export default function Login() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
 
   const { register, handleSubmit, setValue, watch, setError, formState: { errors, isSubmitting } } = useForm<LoginFormValues>({
@@ -28,8 +31,7 @@ export default function Login() {
       console.log("Login Success:", response);
       
       const userObj = response.user || response.data || {};
-      localStorage.setItem("token", response.token);
-      localStorage.setItem("user", JSON.stringify(userObj));
+      dispatch(setCredentials({ user: userObj, token: response.token }));
 
       // Role-based navigation logic
       const role = (userObj.role || "CUSTOMER").toUpperCase();

@@ -25,6 +25,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { useAppDispatch } from "@/store/hooks";
+import { logout } from "@/store/slices/authSlice";
+
 export function getFirstLetter(name?: string): string {
   if (!name || !name.trim()) return "P";
   return name.trim().charAt(0).toUpperCase();
@@ -32,6 +35,7 @@ export function getFirstLetter(name?: string): string {
 
 export default function ProviderAvatarMenu() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [imgError, setImgError] = useState(false);
   const [providerUser, setProviderUser] = useState<{
     name?: string;
@@ -87,9 +91,8 @@ export default function ProviderAvatarMenu() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/login";
+    dispatch(logout());
+    navigate("/login", { replace: true });
   };
 
   const firstLetter = getFirstLetter(providerUser.name);

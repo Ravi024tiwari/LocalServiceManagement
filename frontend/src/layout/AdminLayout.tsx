@@ -13,10 +13,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 import { useLocationDetector } from "@/hooks/useLocationDetector";
 import { MapPin } from "lucide-react";
+import { useAppDispatch } from "@/store/hooks";
+import { logout } from "@/store/slices/authSlice";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { locationName: dynamicLocation, detectLocation, isDetecting } = useLocationDetector();
 
   const [adminUser, setAdminUser] = useState<{ name?: string; email?: string; avatar?: string }>({
@@ -201,7 +204,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 <DropdownMenuItem onClick={() => navigate("/admin/settings")} className="text-xs font-medium cursor-pointer rounded-lg py-2">
                   Platform Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => { localStorage.clear(); window.location.href = "/login"; }} className="text-xs font-bold text-red-600 cursor-pointer rounded-lg py-2">
+                <DropdownMenuItem onClick={() => { dispatch(logout()); navigate("/login", { replace: true }); }} className="text-xs font-bold text-red-600 cursor-pointer rounded-lg py-2">
                   Log Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
