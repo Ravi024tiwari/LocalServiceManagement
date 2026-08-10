@@ -1,12 +1,9 @@
 import mongoose from "mongoose";
+import dns from "dns";
 
-// Cache connection for serverless environments (Vercel)
-let isConnected = false; 
-
-const dbConnect = async () => {
-    // If already connected, return early
-    if (isConnected) {
-        console.log("Using existing MongoDB connection");
+const dbConnect = async (): Promise<void> => {
+    // If already connected (1 = connected, 2 = connecting), reuse existing connection
+    if (mongoose.connection.readyState >= 1) {
         return;
     }
 
@@ -15,21 +12,32 @@ const dbConnect = async () => {
             throw new Error("MONGODB_URL is not defined in the environment variables.");
         }
 
+        // Only set custom DNS in local development (not on Vercel or in production)
+        if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+            try {
+                dns.setServers([
+                    '8.8.8.8', // Google Public DNS
+                    '8.8.4.4',
+                    '1.1.1.1'
+                ]);
+                console.log("Custom DNS configured for local development.");
+            } catch (dnsErr) {
+                console.warn("Failed to set custom DNS servers:", dnsErr);
+            }
+        }
+
         console.log("Attempting MongoDB connection...");
 
         const connectionInstance = await mongoose.connect(process.env.MONGODB_URL, {
-            // bufferCommands: false prevents Mongoose from hanging indefinitely
-            bufferCommands: false, 
+            family: 4, // Force IPv4 to prevent IPv6 routing issues
+            serverSelectionTimeoutMS: 5000,
         });
 
-        isConnected = connectionInstance.connections[0].readyState === 1;
         console.log(`MongoDB connected successfully! DB Host: ${connectionInstance.connection.host}`);
-        
     } catch (error) {
         console.error("MongoDB connection failed:", error);
-        // Do NOT use process.exit(1) on Vercel. Just throw the error.
-        throw error; 
+        throw error;
     }
-}
+};
 
 export default dbConnect;

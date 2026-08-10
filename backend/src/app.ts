@@ -2,6 +2,7 @@ import express, { Request, Response } from "express"
 import cors from "cors"
 import morgan from "morgan"
 import dotenv from "dotenv"
+import dbConnect from "./utils/db.js"
 import authRoute from "./routes/auth.route.js"
 import serviceRouter from "./routes/service.route.js"
 import ProviderProfileRouter from "./routes/providerProfile.route.js"
@@ -32,6 +33,20 @@ app.use(cors({
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+// Ensure database is connected on every request (critical for serverless / Vercel deployment)
+app.use(async (req: Request, res: Response, next) => {
+    try {
+        await dbConnect();
+        next();
+    } catch (error) {
+        console.error("Database connection middleware error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Database connection failed. Please check backend environment variables and network access."
+        });
+    }
+});
 
 
 app.get("/health", (req: Request, res: Response) => {
