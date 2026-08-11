@@ -24,7 +24,7 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
   const [isBecomeProviderOpen, setIsBecomeProviderOpen] = useState(false);
 
   const navItems: NavItem[] = [
-    { name: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/" },
+    { name: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/customer" },
     { name: "Nearby Services", icon: <Compass size={20} />, path: "/nearby-services" },
     { name: "Bookings", icon: <Calendar size={20} />, path: "/bookings" },
     { name: "Liked Services", icon: <Heart size={20} />, path: "/liked-services" },
@@ -34,7 +34,9 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
 
   const getPageTitle = (path: string) => {
     switch (path) {
-      case "/": return "Dashboard";
+      case "/":
+      case "/customer":
+      case "/dashboard": return "Dashboard";
       case "/profile": return "My Profile & Settings";
       case "/bookings": return "My Bookings";
       case "/nearby-services": return "Nearby Services";
@@ -54,7 +56,7 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
       
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden lg:flex w-64 flex-col bg-white border-r border-gray-100 h-screen sticky top-0 overflow-y-auto custom-scrollbar p-4 z-10">
-        <div className="flex items-center gap-2 px-2 mb-8 mt-2 cursor-pointer" onClick={() => navigate("/")}>
+        <div className="flex items-center gap-2 px-2 mb-8 mt-2 cursor-pointer" onClick={() => navigate("/customer")}>
           <div className="bg-emerald-600 p-1.5 rounded-lg shadow-sm">
             <ShieldCheck className="h-5 w-5 text-white" />
           </div>
@@ -63,7 +65,7 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
 
         <nav className="flex-1 space-y-1.5">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = location.pathname === item.path || (item.path === "/customer" && (location.pathname === "/customer" || location.pathname === "/dashboard"));
             return (
               <Link key={item.name} to={item.path} className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 ${isActive ? "bg-emerald-50 text-emerald-700 font-semibold" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium"}`}>
                 <div className="flex items-center gap-3">
@@ -103,7 +105,7 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
         
         {/* DESKTOP HEADER BAR FOR NON-DASHBOARD PAGES */}
-        {location.pathname !== "/" && (
+        {location.pathname !== "/" && location.pathname !== "/customer" && location.pathname !== "/dashboard" && (
           <header className="hidden lg:flex items-center justify-between px-8 py-4 bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-20 shadow-sm">
             <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
               <span className="text-gray-400 font-normal">Customer Portal</span>
@@ -184,7 +186,7 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
 
       {/* MOBILE BOTTOM NAV */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around items-center p-2.5 z-30 pb-safe">
-        <NavItem onClick={() => navigate("/")} icon={<Home />} label="Home" active={location.pathname === "/"} />
+        <NavItem onClick={() => navigate("/customer")} icon={<Home />} label="Home" active={location.pathname === "/customer" || location.pathname === "/"} />
         <NavItem onClick={() => navigate("/bookings")} icon={<Calendar />} label="Bookings" active={location.pathname === "/bookings"} />
         <NavItem onClick={() => navigate("/liked-services")} icon={<Heart />} label="Liked" active={location.pathname === "/liked-services" || location.pathname === "/saved"} />
         <NavItem onClick={() => navigate("/wallet")} icon={<Wallet />} label="Wallet" active={location.pathname === "/wallet"} />
