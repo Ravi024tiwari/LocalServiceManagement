@@ -70,7 +70,7 @@ export const LandingNavbar: FC = () => {
     const role = user.role.toUpperCase();
     if (role === "PROVIDER") return "/provider";
     if (role === "ADMIN") return "/admin";
-    return "/";
+    return "/customer";
   };
 
   return (
