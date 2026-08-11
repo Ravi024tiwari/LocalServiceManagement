@@ -40,7 +40,7 @@ export default function Login() {
       } else if (role === "ADMIN") {
         navigate("/admin");
       } else {
-        navigate("/");
+        navigate("/customer");
       }
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || "Invalid email or password. Please try again.";
