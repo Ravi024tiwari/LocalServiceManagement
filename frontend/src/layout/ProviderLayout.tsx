@@ -2,7 +2,7 @@ import { type ReactNode, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import {
   LayoutDashboard, Briefcase, PlusCircle, Calendar, Users, Star,
-  IndianRupee, Bell, User, Settings, ShieldCheck,
+  Bell, User, Settings, ShieldCheck,
   Menu, Power
 } from "lucide-react";
 
@@ -77,7 +77,6 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
     { name: "Create Service", icon: <PlusCircle size={20} />, path: "/provider/create-service" },
     { name: "Bookings", icon: <Calendar size={20} />, path: "/provider/bookings" },
     { name: "Customers", icon: <Users size={20} />, path: "/provider/customers" },
-    { name: "Earnings", icon: <IndianRupee size={20} />, path: "/provider/earnings" },
     { name: "Profile", icon: <User size={20} />, path: "/provider/profile" },
     { name: "Settings", icon: <Settings size={20} />, path: "/provider/settings" },
   ];
@@ -224,7 +223,6 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
         <NavItem onClick={() => navigate("/provider")} icon={<LayoutDashboard />} label="Dashboard" active={location.pathname === "/provider"} />
         <NavItem onClick={() => navigate("/provider/bookings")} icon={<Calendar />} label="Bookings" active={location.pathname === "/provider/bookings"} />
         <NavItem onClick={() => navigate("/provider/services")} icon={<Briefcase />} label="Services" active={location.pathname === "/provider/services"} />
-        <NavItem onClick={() => navigate("/provider/earnings")} icon={<IndianRupee />} label="Earnings" active={location.pathname === "/provider/earnings"} />
         <NavItem onClick={() => navigate("/provider/profile")} icon={<User />} label="Profile" active={location.pathname === "/provider/profile"} />
       </div>
     </div>
